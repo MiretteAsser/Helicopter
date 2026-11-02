@@ -1,0 +1,947 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>LWTR Turbine Engine Course</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: a single scrolling lecture, one column of modules, each = notes + live figure + check; sticky module rail on top. Cold-section blue and hot-section orange carry meaning everywhere. */
+:root{
+  --paper:#ECEFF1; --panel:#F8FAFB; --sunk:#E1E6E9; --ink:#14212B; --muted:#56666F; --rule:#C6CFD4;
+  --cold:#2A6A99; --cold-soft:#D5E4EF; --hot:#C9571A; --hot-soft:#F6DFD0;
+  --ok:#2C7A4B; --ok-soft:#D7EBDD; --bad:#B02A22; --bad-soft:#F4D9D6; --metal:#9AA8B0;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0E161C; --panel:#15212A; --sunk:#1B2933; --ink:#E2E9ED; --muted:#91A2AC; --rule:#2B3B46;
+  --cold:#6AB0E2; --cold-soft:#1A3446; --hot:#F08A45; --hot-soft:#3D2416;
+  --ok:#5CC38A; --ok-soft:#173526; --bad:#F2766D; --bad-soft:#3E1C1A; --metal:#4E5F6A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0E161C; --panel:#15212A; --sunk:#1B2933; --ink:#E2E9ED; --muted:#91A2AC; --rule:#2B3B46;
+  --cold:#6AB0E2; --cold-soft:#1A3446; --hot:#F08A45; --hot-soft:#3D2416;
+  --ok:#5CC38A; --ok-soft:#173526; --bad:#F2766D; --bad-soft:#3E1C1A; --metal:#4E5F6A; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.05;text-wrap:balance;margin:0;letter-spacing:.005em}
+h1{font-size:clamp(2.4rem,7vw,3.6rem);text-transform:uppercase}
+h2{font-size:clamp(1.9rem,5vw,2.4rem);text-transform:uppercase}
+h3{font-size:1.3rem;text-transform:uppercase;letter-spacing:.02em}
+p{margin:0}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--cold);outline-offset:2px}
+
+/* header */
+header.top{padding-block:28px 18px}
+.top .wrap{display:grid;gap:12px}
+.titleline{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.lede{max-width:62ch;color:var(--muted)}
+.heatbar{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--cold) 0 48%,var(--hot) 52% 100%);max-width:420px}
+.legendrow{display:flex;gap:18px;flex-wrap:wrap;font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+.legendrow span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px;background:var(--c)}
+
+/* rail */
+nav.rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--paper);border-bottom:1px solid var(--rule)}
+.rail .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:8px;scrollbar-width:none}
+.rail .wrap::-webkit-scrollbar{display:none}
+.rail a{flex:none;display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--ink);font-family:var(--f-display);font-weight:600;font-size:1.02rem;letter-spacing:.02em;text-transform:uppercase;padding:6px 11px;border-radius:999px;border:1px solid var(--rule);background:var(--panel)}
+.rail a .n{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.rail a.done{border-color:var(--ok)}
+.rail a.done .n{color:var(--ok)}
+.rail a.exam{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* modules */
+section.mod{padding-block:44px 8px;scroll-margin-top:calc(56px + env(safe-area-inset-top,0px))}
+.modhead{display:grid;gap:6px;margin-bottom:18px}
+.modhead .eyebrow b{color:var(--ink);font-weight:500}
+.notes{display:grid;gap:12px;max-width:66ch;margin-bottom:22px}
+.notes ul{margin:0;padding-left:1.1em;display:grid;gap:8px}
+.notes li::marker{color:var(--muted)}
+.notes b{font-weight:600}
+.k-cold{color:var(--cold);font-weight:600}
+.k-hot{color:var(--hot);font-weight:600}
+
+.fig{background:var(--panel);border:1px solid var(--rule);border-radius:var(--r);padding:16px;display:grid;gap:14px;margin-bottom:22px}
+.fig .cap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
+.fig .cap .eyebrow{color:var(--muted)}
+.fig svg{width:100%;height:auto;display:block}
+.hint{font-size:.82rem;color:var(--muted)}
+
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--rule);background:var(--paper);padding:7px 12px;border-radius:7px;cursor:pointer;font-size:.9rem;font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.seg button.hot[aria-pressed="true"]{background:var(--hot);border-color:var(--hot);color:#fff}
+.seg button.cold[aria-pressed="true"]{background:var(--cold);border-color:var(--cold);color:#fff}
+
+.info{display:grid;gap:10px;border-top:1px solid var(--rule);padding-top:14px}
+.trend{display:flex;gap:10px;flex-wrap:wrap;font-family:var(--f-mono);font-size:.82rem}
+.trend span{padding:3px 8px;border-radius:5px;background:var(--sunk)}
+.facts{margin:0;padding-left:1.1em;display:grid;gap:4px;font-size:.93rem}
+
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.two > *{min-width:0}
+.card{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:12px 14px;display:grid;gap:6px;align-content:start}
+.card h3{font-size:1.15rem}
+.card.cold{border-top:4px solid var(--cold)} .card.hot{border-top:4px solid var(--hot)}
+.card ul{margin:0;padding-left:1.1em;display:grid;gap:4px;font-size:.93rem}
+
+.readouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.ro{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:8px 10px;display:grid;gap:2px}
+.ro .lbl{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ro .val{font-family:var(--f-display);font-weight:700;font-size:1.7rem;line-height:1;font-variant-numeric:tabular-nums}
+
+input[type=range]{width:100%;accent-color:var(--cold)}
+.slider{display:grid;gap:4px}
+.slider label{display:flex;justify-content:space-between;font-size:.9rem;gap:8px}
+
+/* quiz */
+.check{display:grid;gap:12px;margin-bottom:12px}
+.checkhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.btn{border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:8px;padding:9px 16px;cursor:pointer;font-weight:600}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--rule)}
+.btn:disabled{opacity:.45;cursor:default}
+.qc{background:var(--panel);border:1px solid var(--rule);border-radius:var(--r);padding:14px;display:grid;gap:10px}
+.qc .qmeta{display:flex;gap:8px;flex-wrap:wrap;font-family:var(--f-mono);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.qc .qtext{font-weight:600;line-height:1.4}
+.opts{display:grid;gap:7px}
+.opt{text-align:left;border:1px solid var(--rule);background:var(--paper);border-radius:8px;padding:10px 12px;cursor:pointer;display:flex;gap:10px;align-items:flex-start;line-height:1.35}
+.opt .lt{font-family:var(--f-mono);font-size:.8rem;color:var(--muted);padding-top:1px}
+.opt:hover:not(:disabled){border-color:var(--cold)}
+.opt:disabled{cursor:default}
+.opt.right{border-color:var(--ok);background:var(--ok-soft)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.right .lt{color:var(--ok)} .opt.wrong .lt{color:var(--bad)}
+.why{font-size:.92rem;border-left:3px solid var(--cold);padding:2px 0 2px 10px;display:grid;gap:6px}
+.why .verdict{font-weight:600}
+.why .verdict.ok{color:var(--ok)} .why .verdict.no{color:var(--bad)}
+.dispute{font-size:.85rem;background:var(--hot-soft);border-radius:6px;padding:7px 10px}
+
+/* start sim */
+.gauges{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gauge{background:var(--paper);border:1px solid var(--rule);border-radius:8px;padding:8px;display:grid;justify-items:center;gap:2px}
+.gauge .gv{font-family:var(--f-display);font-weight:700;font-size:1.8rem;line-height:1;font-variant-numeric:tabular-nums}
+.gauge .gl{font-family:var(--f-mono);font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.switches{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sw{border:1px solid var(--rule);border-radius:8px;background:var(--paper);padding:10px 6px;cursor:pointer;display:grid;gap:2px;justify-items:center}
+.sw .swl{font-family:var(--f-display);font-weight:700;font-size:1.15rem;text-transform:uppercase}
+.sw .sws{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.sw[aria-pressed="true"]{border-color:var(--cold);background:var(--cold-soft)}
+.sw[aria-pressed="true"] .sws{color:var(--cold)}
+.sw.fuel[aria-pressed="true"]{border-color:var(--hot);background:var(--hot-soft)}
+.sw.fuel[aria-pressed="true"] .sws{color:var(--hot)}
+.steps{display:grid;gap:4px;margin:0;padding:0;list-style:none;counter-reset:s;font-size:.9rem}
+.steps li{counter-increment:s;display:flex;gap:8px;align-items:center;color:var(--muted)}
+.steps li::before{content:counter(s);font-family:var(--f-mono);font-size:.72rem;width:20px;height:20px;border-radius:50%;border:1px solid var(--rule);display:grid;place-items:center;flex:none}
+.steps li.done{color:var(--ink)}
+.steps li.done::before{content:"✓";background:var(--ok);border-color:var(--ok);color:#fff}
+.log{display:grid;gap:6px;min-height:46px}
+.msg{font-size:.9rem;border-radius:6px;padding:7px 10px;background:var(--sunk)}
+.msg.bad{background:var(--bad-soft);color:var(--ink);border-left:3px solid var(--bad)}
+.msg.ok{background:var(--ok-soft);border-left:3px solid var(--ok)}
+.msg.warn{background:var(--hot-soft);border-left:3px solid var(--hot)}
+.firebadge{font-family:var(--f-display);font-weight:700;letter-spacing:.06em;text-transform:uppercase;background:var(--bad);color:#fff;border-radius:6px;padding:3px 9px}
+
+/* fuel chain */
+.chain{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.chain li{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.chain .pipe{position:relative;height:100%;min-height:52px;display:grid;justify-items:center}
+.chain .pipe::before{content:"";position:absolute;top:0;bottom:0;width:4px;background:repeating-linear-gradient(180deg,var(--hot) 0 8px,transparent 8px 14px);background-size:4px 14px;animation:flow 0.9s linear infinite;opacity:.8}
+.chain li:last-child .pipe::before{bottom:50%}
+.chain li:first-child .pipe::before{top:14px}
+.chain .node{position:relative;z-index:1;width:14px;height:14px;border-radius:50%;background:var(--panel);border:3px solid var(--hot);margin-top:8px}
+.chain .what{padding-block:4px 12px}
+.chain .what b{font-weight:600}
+.chain .what p{font-size:.88rem;color:var(--muted)}
+@keyframes flow{to{background-position:0 14px}}
+
+/* exam */
+.examsetup{display:grid;gap:14px}
+.examsetup .row{display:grid;gap:6px}
+.examsetup .row > span{font-family:var(--f-mono);font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.progressbar{height:6px;border-radius:3px;background:var(--sunk);overflow:hidden}
+.progressbar i{display:block;height:100%;background:var(--cold);width:0;transition:width .3s}
+.scoreline{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.bigscore{font-family:var(--f-display);font-weight:700;font-size:4rem;line-height:.9;font-variant-numeric:tabular-nums}
+.tbars{display:grid;gap:6px}
+.tbar{display:grid;grid-template-columns:minmax(90px,140px) 1fr 52px;gap:10px;align-items:center;font-size:.86rem}
+.tbar .tr{height:10px;border-radius:5px;background:var(--sunk);overflow:hidden}
+.tbar .tr i{display:block;height:100%;background:var(--cold)}
+.tbar .mono{text-align:right;font-size:.8rem}
+.missed{display:grid;gap:8px;font-size:.92rem}
+.missed div{border-left:3px solid var(--bad);padding-left:10px}
+.missed div p:last-child{color:var(--ok);font-weight:500}
+
+.keys{font-size:.92rem;display:grid;gap:8px;max-width:66ch}
+.keys ul{margin:0;padding-left:1.1em;display:grid;gap:6px}
+footer{padding-block:30px 40px;color:var(--muted);font-size:.85rem}
+
+@media (prefers-reduced-motion: reduce){.chain .pipe::before{animation:none}.rotor-anim{animation:none!important}}
+.rotor-anim{animation:spinrow .6s linear infinite}
+@keyframes spinrow{to{stroke-dashoffset:-18}}
+.dash-anim{animation:dash 1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-20}}
+@media (prefers-reduced-motion: reduce){.dash-anim{animation:none}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <div class="eyebrow">LWTR Helicopter · Engine · Built from Exams 1–4 (2006–2007)</div>
+    <h1>LWTR Turbine<br>Engine Course</h1>
+    <div class="heatbar" aria-hidden="true"></div>
+    <p class="lede">Every question from the four answered Engine exams, turned into nine short lessons. Each lesson has a live diagram to play with and a few exam questions to check yourself. A practice exam with all 96 unique questions is at the end.</p>
+    <div class="legendrow"><span style="--c:var(--cold)">Cold section</span><span style="--c:var(--hot)">Hot section</span><span style="--c:var(--ok)">Lesson checked</span></div>
+  </div>
+</header>
+
+<nav class="rail" aria-label="Lessons">
+  <div class="wrap" id="rail"></div>
+</nav>
+
+<main>
+<!-- 1 -->
+<section class="mod" id="basics" data-topic="basics">
+  <div class="wrap">
+    <div class="modhead"><div class="eyebrow">Lesson 1 · <b>The gas turbine</b></div><h2>Air in, power out</h2></div>
+    <div class="notes">
+      <p>A gas turbine runs the <b>Brayton cycle</b>: it compresses air, burns fuel in it at <b>constant pressure</b>, then expands the hot gas through a turbine. Three core sections do the work: <b>compressor, combustion and turbine</b>.</p>
+      <ul>
+        <li>For inspection, the engine splits into a <span class="k-cold">cold section</span> (inlet, compressor, diffuser) and a <span class="k-hot">hot section</span> (combustor, turbine, exhaust).</li>
+        <li>The hot section's typical damage is <b>cracking</b>, from constant heating and cooling.</li>
+        <li><b>Turbine inlet temperature</b> is the most critical variable. It sets the engine's limits.</li>
+        <li>Standard sea level (ISA): <span class="mono">29.92 inHg</span> and <span class="mono">15 °C</span>.</li>
+      </ul>
+    </div>
+    <div class="fig">
+      <div class="cap"><span class="eyebrow">Figure 1 · Engine cross-section</span><span class="hint">Tap a section</span></div>
+      <svg id="engine" viewBox="0 0 800 330" role="img" aria-label="Cross-section of a gas turbine with air particles flowing from inlet to exhaust, changing from blue to orange as they heat up"></svg>
+      <div class="seg" id="secBtns"></div>
+      <svg id="chart" viewBox="0 0 800 190" role="img" aria-label="Pressure, temperature and velocity along the engine"></svg>
+      <div class="legendrow"><span style="--c:var(--cold)">Pressure</span><span style="--c:var(--hot)">Temperature</span><span style="--c:var(--ink)">Velocity</span></div><p class="hint">Dots mark the peaks: pressure at the diffuser, temperature at the combustor exit, velocity in the turbine. Shapes only, not to scale.</p>
+      <div class="info" id="secInfo" aria-live="polite"></div>
+    </div>
+    <div class="check" data-topics="basics"></div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="mod" id="airflow" data-topic="noz">
+  <div class="wrap">
+    <div class="modhead"><div class="eyebrow">Lesson 2 · <b>Ducts and nozzles</b></div><h2>Squeeze it, it speeds up</h2></div>
+    <div class="notes">
+      <p>Inside the engine, air is below the speed of sound. At those speeds the duct shape decides what happens. The same mass of air must pass every cross-section each second.</p>
+      <ul>
+        <li><b>Convergent</b> (narrowing): velocity <b>increases</b>, pressure <b>decreases</b>. Examples: nozzle guide vanes, the exhaust nozzle.</li>
+        <li><b>Divergent</b> (widening): velocity <b>decreases</b>, pressure <b>increases</b>. Examples: the diffuser, the passages between stator vanes.</li>
+        <li>Gas reaches its <b>highest velocity in the turbine section</b>, where the nozzle guide vanes accelerate it.</li>
+      </ul>
+    </div>
+    <div class="fig">
+      <div class="cap"><span class="eyebrow">Figure 2 · Duct shape</span>
+        <div class="seg" id="nozBtns"><button type="button" aria-pressed="true" data-n="con">Convergent</button><button type="button" aria-pressed="false" data-n="div">Divergent</button></div>
+      </div>
+      <svg id="nozzle" viewBox="0 0 600 200" role="img" aria-label="Duct with particles flowing through it"></svg>
+      <div class="readouts">
+        <div class="ro"><span class="lbl">Velocity, exit vs entry</span><span class="val" id="nozV">×2.0</span></div>
+        <div class="ro"><span class="lbl">Pressure</span><span class="val" id="nozP">Falls</span></div>
+        <div class="ro"><span class="lbl">Found in</span><span class="val" id="nozW" style="font-size:1.15rem;line-height:1.15">Nozzle guide vanes, exhaust nozzle</span></div>
+      </div>
+    </div>
+    <div class="check" data-topics="noz"></div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="mod" id="compressor" data-topic="comp">
+  <div class="wrap">
+    <div class="modhead"><div class="eyebrow">Lesson 3 · <b>Compressors</b></div><h2>Stage by stage</h2></div>
+    <div class="notes">
+      <p>An <b>axial</b> compressor is rows of spinning <b>rotor blades</b> with rows of fixed <b>stator vanes</b> between them. One rotor row plus one stator row is a <b>stage</b>.</p>
+      <ul>
+        <li>Rotors add energy. <b>Stators</b> slow the air, turn velocity into pressure (a diffuser action) and direct it into the next rotor at the right angle. The last row, at the discharge, <b>straightens the flow</b> to remove turbulence.</li>
+        <li>The <b>number of stages</b> sets the pressure ratio. A <b>dual axial (two-spool)</b> design gets a higher compression ratio.</li>
+        <li>At constant RPM, blade angle of attack changes with the <b>velocity of the incoming air</b>. At low RPM a <b>bleed air valve</b> dumps air to prevent stall.</li>
+        <li>The <b>diffuser</b>, between the compressor and the burner, raises pressure and lowers velocity. <b>Highest pressure</b> in the engine is at the compressor outlet.</li>
+        <li>Dirty blades lose efficiency and raise <b>EGT</b>. Washing them on the wing is <b>field cleaning</b>. Severe rubbing causes <b>galling and cracking</b>.</li>
+      </ul>
+    </div>
+    <div class="fig">
+      <div class="cap"><span class="eyebrow">Figure 3 · Build an axial compressor</span><span class="hint">Spinning rows are rotors</span></div>
+      <svg id="stages" viewBox="0 0 600 230" role="img" aria-label="Axial compressor stages with pressure rising at each stage"></svg>
+      <div class="slider"><label for="stageN"><span>Stages</span><span class="mono" id="stageNv">6</span></label><input type="range" id="stageN" min="1" max="14" value="6"></div>
+      <div class="readouts">
+        <div class="ro"><span class="lbl">Overall pressure ratio</span><span class="val" id="prv">3.3 : 1</span></div>
+        <div class="ro"><span class="lbl">Rise per stage</span><span class="val">≈ 1.22</span></div>
+      </div>
+      <p class="hint">Each axial stage adds only a little. A single centrifugal stage can reach roughly 4 : 1 on its own. Figures are typical, for comparison only.</p>
+    </div>
+    <div class="two" style="margin-bottom:22px">
+      <div class="card cold"><h3>Axial flow</h3><ul><li>High compression ratio (many stages)</li><li>High peak efficiency</li><li>Small frontal area</li><li>More fragile, needs many parts</li></ul></div>
+      <div class="card cold"><h3>Centrifugal flow</h3><ul><li>Two elements: <b>impeller</b> and <b>diffuser</b></li><li>High pressure rise per stage</li><li>Rugged and simple</li><li>Turbine shaft joins it by a <b>splined coupling</b></li></ul></div>
+    </div>
+    <div class="check" data-topics="comp"></div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="mod" id="combustion" data-topic="comb">
+  <div class="wrap">
+    <div class="modhead"><div class="eyebrow">Lesson 4 · <b>Combustion</b></div><h2>Burn a quarter, cool with the rest</h2></div>
+    <div class="notes">
+      <p>The combustion section mixes fuel with air and burns it at constant pressure. Air passing through it both <b>supports combustion and cools the engine</b>.</p>
+      <ul>
+        <li>About a quarter of the air is <b>primary air</b> that feeds the flame. The rest is <b>secondary air</b>: it cools the liner walls with a film and dilutes the gas before the turbine.</li>
+        <li>Three types are used: <b>multiple-can, annular and can-annular</b>.</li>
+        <li>In a <b>duplex fuel nozzle</b>, the flow divider opens the main orifice when <b>fuel pressure</b> rises.</li>
+        <li>Hot spots in the burner point to <b>malfunctioning fuel nozzles</b>. Hot spots on the tail cone point to a nozzle or a <b>faulty combustion chamber</b>.</li>
+      </ul>
+    </div>
+    <div class="fig">
+      <div class="cap"><span class="eyebrow">Figure 4 · Duplex fuel nozzle</span><span class="hint">Raise the fuel pressure</span></div>
+      <svg id="duplex" viewBox="0 0 600 220" role="img" aria-label="Duplex fuel nozzle spraying fuel; the main spray opens above a set pressure"></svg>
+      <div class="slider"><label for="fuelP"><span>Fuel pressure</span><span class="mono" id="fuelPv">20%</span></label><input type="range" id="fuelP" min="0" max="100" value="20"></div>
+      <div class="readouts">
+        <div class="ro"><span class="lbl">Flow divider</span><span class="val" id="divState">Closed</span></div>
+        <div class="ro"><span class="lbl">Spraying</span><span class="val" id="divSpray" style="font-size:1.2rem;line-height:1.2">Primary only</span></div>
+      </div>
+      <p class="hint">The small primary orifice gives a fine, wide spray for starting. The divider opens to the main orifice once pressure passes its setting.</p>
+    </div>
+    <div class="fig">
+      <div class="cap"><span class="eyebrow">Figure 5 · Combustor types, seen end-on</span></div>
+      <svg viewBox="0 0 600 190" role="img" aria-label="Three combustor layouts seen end-on: multiple-can, annular, can-annular">
+        <g font-family="IBM Plex Mono, monospace" font-size="17" text-anchor="middle" fill="var(--muted)">
+          <g transform="translate(100,85)">
+            <circle r="70" fill="none" stroke="var(--rule)" stroke-width="3"/><circle r="20" fill="var(--metal)"/>
+            <g fill="var(--hot-soft)" stroke="var(--hot)" stroke-width="3"><circle cx="0" cy="-45" r="17"/><circle cx="39" cy="-22" r="17"/><circle cx="39" cy="22" r="17"/><circle cx="0" cy="45" r="17"/><circle cx="-39" cy="22" r="17"/><circle cx="-39" cy="-22" r="17"/></g>
+            <text y="100">Multiple-can</text></g>
+          <g transform="translate(300,85)">
+            <circle r="70" fill="none" stroke="var(--rule)" stroke-width="3"/><circle r="20" fill="var(--metal)"/>
+            <circle r="45" fill="none" stroke="var(--hot-soft)" stroke-width="30"/><circle r="60" fill="none" stroke="var(--hot)" stroke-width="3"/><circle r="30" fill="none" stroke="var(--hot)" stroke-width="3"/>
+            <text y="100">Annular</text></g>
+          <g transform="translate(500,85)">
+            <circle r="70" fill="none" stroke="var(--rule)" stroke-width="3"/><circle r="20" fill="var(--metal)"/>
+            <circle r="60" fill="none" stroke="var(--hot)" stroke-width="3"/><circle r="30" fill="none" stroke="var(--hot)" stroke-width="3"/>
+            <g fill="var(--hot-soft)" stroke="var(--hot)" stroke-width="3"><circle cx="0" cy="-45" r="13"/><circle cx="39" cy="-22" r="13"/><circle cx="39" cy="22" r="13"/><circle cx="0" cy="45" r="13"/><circle cx="-39" cy="22" r="13"/><circle cx="-39" cy="-22" r="13"/></g>
+            <text y="100">Can-annular</text></g>
+        </g>
+      </svg>
+    </div>
+    <div class="check" data-topics="comb"></div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="mod" id="turbine" data-topic="turb">
+  <div class="wrap">
+    <div class="modhead"><div class="eyebrow">Lesson 5 · <b>The turbine</b></div><h2>Where the heat does the work</h2></div>
+    <div class="notes">
+      <p>Each turbine stage has two elements: a <b>stator</b> (the nozzle guide vanes) and a <b>rotor</b> (the bladed wheel). The vanes form convergent passages that <b>speed the gas up and aim it</b> at the blades at the right angle.</p>
+      <ul>
+        <li>The first-stage <b>inlet guide vanes</b> get the highest heat-to-metal contact in the engine.</li>
+        <li>Most blades are <b>reaction-impulse</b>: impulse at the root, reaction at the tip. Blades are held by a <b>fir-tree</b> root.</li>
+        <li><b>Shrouded</b> blades have tips that join into a band. This reduces vibration and improves airflow.</li>
+        <li>Some engines put <b>more than one wheel on a shaft</b> to extract more power than one wheel can.</li>
+        <li>Blades removed for inspection go back in <b>the same slot</b>, because the set is balanced together.</li>
+      </ul>
+    </div>
+    <div class="fig">
+      <div class="cap"><span class="eyebrow">Figure 6 · Inspect a turbine blade</span><span class="hint">Tap a marker</span></div>
+      <svg id="blade" viewBox="0 0 600 360" role="img" aria-label="Turbine blade with four inspection markers"></svg>
+      <div class="info" id="bladeInfo" aria-live="polite"></div>
+    </div>
+    <div class="check" data-topics="turb"></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="mod" id="starting" data-topic="start">
+  <div class="wrap">
+    <div class="modhead"><div class="eyebrow">Lesson 6 · <b>Starting and shutdown</b></div><h2>Starter, ignition, fuel</h2></div>
+    <div class="notes">
+      <p>The proper sequence is <b>starter, ignition, fuel</b>. The starter gives airflow first, the igniters must be firing before fuel arrives, and fuel goes in last.</p>
+      <ul>
+        <li>The first sign of a good start is a <b>rise in EGT</b> (light-off). Watch <b>TIT/EGT</b> to catch a hot start.</li>
+        <li><b>Hot start</b>: EGT goes above its limit. <b>Hung start</b>: the engine lights but fails to reach idle RPM.</li>
+        <li>Keep the starter engaged until the engine is self-sustaining at <b>idle RPM</b>.</li>
+        <li><b>Fire during start</b>: turn the fuel off and <b>keep cranking</b> to blow the fire out.</li>
+        <li>Before shutdown, a <b>cool-off period</b> lets the turbine wheel cool before the thinner case contracts around it.</li>
+      </ul>
+    </div>
+    <div class="fig">
+      <div class="cap"><span class="eyebrow">Figure 7 · Start simulator</span><span class="hint">Values illustrative</span></div>
+      <div class="seg" id="scen" role="group" aria-label="Scenario">
+        <button type="button" aria-pressed="true" data-s="normal">Normal</button>
+        <button type="button" aria-pressed="false" data-s="hot">Rich fuel</button>
+        <button type="button" aria-pressed="false" data-s="hung">Weak starter</button>
+        <button type="button" aria-pressed="false" data-s="fire">Tailpipe fire</button>
+      </div>
+      <div class="gauges">
+        <div class="gauge"><svg id="gN1" viewBox="0 0 200 120" aria-hidden="true"></svg><span class="gv" id="vN1">0%</span><span class="gl">N1 · RPM</span></div>
+        <div class="gauge"><svg id="gEGT" viewBox="0 0 200 120" aria-hidden="true"></svg><span class="gv" id="vEGT">25°</span><span class="gl">EGT · °C</span></div>
+      </div>
+      <div class="switches">
+        <button type="button" class="sw" id="swStarter" aria-pressed="false"><span class="swl">Starter</span><span class="sws">OFF</span></button>
+        <button type="button" class="sw" id="swIgn" aria-pressed="false"><span class="swl">Ignition</span><span class="sws">OFF</span></button>
+        <button type="button" class="sw fuel" id="swFuel" aria-pressed="false"><span class="swl">Fuel</span><span class="sws">OFF</span></button>
+      </div>
+      <ol class="steps" id="steps">
+        <li>Starter ON, N1 builds</li><li>Ignition ON</li><li>Fuel ON at about 12% N1</li><li>Light-off: EGT rises</li><li>Starter OFF at idle (60%)</li>
+      </ol>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" class="btn ghost" id="simReset">Reset</button><span id="fireBadge" class="firebadge" hidden>Fire</span></div>
+      <div class="log" id="simLog" aria-live="polite"></div>
+    </div>
+    <div class="check" data-topics="start"></div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="mod" id="instruments" data-topic="instr">
+  <div class="wrap">
+    <div class="modhead"><div class="eyebrow">Lesson 7 · <b>Engine instruments</b></div><h2>Reading the engine</h2></div>
+    <div class="notes">
+      <ul>
+        <li>The <b>tachometer</b> is a primary engine instrument, calibrated in <b>percent RPM</b>.</li>
+        <li>Helicopters need two tachometer indications: <b>engine RPM and main rotor RPM</b>.</li>
+        <li>Engine temperatures are measured with <b>chromel-alumel thermocouples</b>. EGT gives a <b>relative indication of turbine inlet temperature</b> and shows the turbine's mechanical health.</li>
+        <li><b>EPR</b> = turbine outlet total pressure ÷ engine inlet total pressure. Turning on <b>anti-icing</b> at a fixed power lever <b>lowers EPR</b>, because bleed air is taken from the cycle.</li>
+      </ul>
+    </div>
+    <div class="two" style="margin-bottom:22px">
+      <div class="fig" style="margin:0">
+        <div class="cap"><span class="eyebrow">Figure 8 · EPR</span></div>
+        <div class="slider"><label for="pl"><span>Power lever</span><span class="mono" id="plv">70%</span></label><input type="range" id="pl" min="0" max="100" value="70"></div>
+        <div class="seg"><button type="button" id="aiBtn" class="cold" aria-pressed="false">Anti-ice OFF</button></div>
+        <div class="readouts">
+          <div class="ro"><span class="lbl">Pt7 turbine out</span><span class="val" id="pt7">27.0</span></div>
+          <div class="ro"><span class="lbl">Pt2 inlet</span><span class="val">14.7</span></div>
+        </div>
+        <div class="ro"><span class="lbl">EPR = Pt7 ÷ Pt2</span><span class="val" id="epr" style="font-size:2.4rem">1.84</span></div>
+        <p class="hint">Pressures in psi, illustrative.</p>
+      </div>
+      <div class="fig" style="margin:0">
+        <div class="cap"><span class="eyebrow">Figure 9 · Dual tachometer</span></div>
+        <svg id="tach" viewBox="0 0 220 200" role="img" aria-label="Dual tachometer with engine and rotor needles"></svg>
+        <div class="seg"><button type="button" id="autoBtn" aria-pressed="false">Simulate autorotation</button></div>
+        <p class="hint" id="tachTxt">Powered flight: the needles are joined. The engine drives the rotor at the same percent RPM.</p>
+      </div>
+    </div>
+    <div class="check" data-topics="instr"></div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="mod" id="systems" data-topic="systems">
+  <div class="wrap">
+    <div class="modhead"><div class="eyebrow">Lesson 8 · <b>Engine systems</b></div><h2>Fuel, oil and fire</h2></div>
+    <div class="two" style="margin-bottom:22px">
+      <div class="fig" style="margin:0">
+        <div class="cap"><span class="eyebrow">Figure 10 · Fuel path</span></div>
+        <ol class="chain">
+          <li><span class="pipe"><span class="node"></span></span><div class="what"><b>Tank boost pump</b><p>Gives a positive flow of fuel to the engine pump.</p></div></li>
+          <li><span class="pipe"><span class="node"></span></span><div class="what"><b>Engine-driven pump</b><p>Raises fuel to working pressure.</p></div></li>
+          <li><span class="pipe"><span class="node"></span></span><div class="what"><b>Shutoff valve</b><p>Usually downstream of the engine-driven pump.</p></div></li>
+          <li><span class="pipe"><span class="node"></span></span><div class="what"><b>Fuel control unit</b><p>Meters fuel from compressor outlet pressure, turbine temperature and RPM. Re-rig the engine after replacing it.</p></div></li>
+          <li><span class="pipe"><span class="node"></span></span><div class="what"><b>Flow divider and duplex nozzles</b><p>Fuel pressure opens the main orifice.</p></div></li>
+        </ol>
+        <p class="hint">Where fuel lines can't be kept apart from wiring, run them <b>below</b> the wiring and clamp them to structure.</p>
+      </div>
+      <div style="display:grid;gap:12px;align-content:start">
+        <div class="card hot"><h3>Oil</h3><ul>
+          <li>The temperature gauge reads oil <b>entering the engine</b>.</li>
+          <li>The <b>oil pressure regulator</b> is adjusted to set system pressure.</li>
+          <li><b>Synthetic</b> oil evaporates less at high temperature and forms less lacquer and coke.</li>
+          <li>Oil is changed on schedule because it gets <b>contaminated with fine solid particles</b>.</li></ul></div>
+        <div class="card hot"><h3>Fire and ice</h3><ul>
+          <li>A <b>continuous-loop</b> detector is an <b>overheat</b> detector.</li>
+          <li>Extinguishers fire by an <b>electrically discharged cartridge</b> (squib).</li>
+          <li><b>Anti-icing</b> ducts engine bleed air through the inlet's critical areas.</li>
+          <li>Most exhaust failures are thermal-fatigue cracks from <b>improper welding</b> in manufacture.</li></ul></div>
+      </div>
+    </div>
+    <div class="check" data-topics="systems"></div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="mod" id="heli" data-topic="heli">
+  <div class="wrap">
+    <div class="modhead"><div class="eyebrow">Lesson 9 · <b>Twin-Pac and the rules</b></div><h2>Helicopter specifics</h2></div>
+    <div class="notes">
+      <ul>
+        <li>The <b>Twin-Pac</b> has two power sections, each with its own turbine, driving one <b>combining gearbox (C-box)</b>. Each power section has its own ignition system. There are <b>three oil systems</b>: one per power section plus the C-box.</li>
+        <li>On a governed engine, <b>raising or lowering the collective has no effect</b> on the twist-grip throttle position. A friction control holds the grip <b>at the selected position</b>.</li>
+      </ul>
+    </div>
+    <div class="fig">
+      <div class="cap"><span class="eyebrow">Figure 11 · Twin-Pac layout</span></div>
+      <svg id="twin" viewBox="0 0 600 250" role="img" aria-label="Two power sections feeding one combining gearbox"></svg>
+    </div>
+    <div class="two" style="margin-bottom:22px">
+      <div class="card cold"><h3>Paperwork</h3><ul>
+        <li>An <b>AD</b> is complied with <b>as specified in the AD</b>.</li>
+        <li>Time and cycle limits for an installed engine are in the aircraft manufacturer's <b>Instructions for Continued Airworthiness</b>.</li></ul></div>
+      <div class="card cold"><h3>Inspection habits</h3><ul>
+        <li>Never mark hot-section parts with a <b>lead pencil</b>. The graphite can cause cracks.</li>
+        <li>Reinstall turbine blades in <b>the same slot</b>.</li>
+        <li>After replacing a fuel control, <b>re-rig</b> the engine.</li></ul></div>
+    </div>
+    <div class="check" data-topics="heli,maint"></div>
+  </div>
+</section>
+
+<!-- exam -->
+<section class="mod" id="exam">
+  <div class="wrap">
+    <div class="modhead"><div class="eyebrow">Practice exam · <b><span id="bankCount">96</span> unique questions</b></div><h2>Test yourself</h2></div>
+    <div class="fig" id="examBox"></div>
+    <div class="keys">
+      <h3>About the answer keys</h3>
+      <p>The four exams share many questions. Repeats were merged, and spelling was cleaned up. In a few places the keys disagree with each other or with turbine theory. This course uses the answer below and shows a note when the question comes up.</p>
+      <ul>
+        <li>Fuel shutoff valve: Model 2 marks “before the driven fuel pump”. Models 1 and 3 say downstream of the engine-driven pump.</li>
+        <li>Fire extinguisher activation: Model 2 marks “piston stem and plunger”. Used here: electrically discharged cartridge.</li>
+        <li>AD compliance: Model 2 marks “next scheduled inspection”. Used here: as specified in the AD.</li>
+        <li>Starter disengagement: Model 4 marks “ignition and fuel system are activated”. Used here: engine reaches idle RPM.</li>
+        <li>Highest gas velocity: Model 4 marks “diffuser”. A diffuser slows air down, so this course uses turbine.</li>
+        <li>Model 3's “two basic sections in turbine engine” was left out. Its key (combustion chamber and turbine) matches no standard answer.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+</main>
+<footer><div class="wrap">Built from the answered LWTR Engine exams, Models 1–3 (Sept. 2006) and Model 4 (Apr. 2007). Study aid only. Your aircraft's manuals and approved data always take precedence.</div></footer>
+
+<script>
+const BANK = [{"q": "What is the Purpose of the stator blades in the compressor section of turbine engine?", "o": ["Stabilize pressure.", "Prevent Compressor surge.", "Control direction of the airflow and increase its pressure as diffuser."], "a": 2, "t": "comp", "e": "Stators sit between rotor stages. They slow the air, turning velocity into pressure (a diffuser action), and aim it at the next rotor at the right angle. Exit guide vanes at the discharge straighten the flow.", "models": [1, 2, 3], "n": null}, {"q": "Most exhaust system failures result from thermal fatigue cracking in the areas of stress concentration This condition is usually caused by.", "o": ["Improper welding techniques during manufacture.", "The low temperatures which the exhaust system is subjected to during initial warm-up.", "The high temperatures at which exhaust system operates."], "a": 0, "t": "systems", "e": "Thermal-fatigue cracks start at stress raisers, usually from poor welding during manufacture.", "models": [1, 2, 3], "n": null}, {"q": "What are the two functional elements in a centrifugal compressor?", "o": ["Turbine and compressor.", "Compressor and manifold.", "Bucket and expander.", "Impeller and diffuser."], "a": 3, "t": "comp", "e": "A centrifugal compressor is an impeller that flings air outward, plus a diffuser that converts that speed into pressure.", "models": [1, 2, 3, 4], "n": null}, {"q": "Standard sea level pressure is:", "o": ["30.92 inches of mercury.", "56.2 inches of mercury.", "29.92 inches of mercury."], "a": 2, "t": "basics", "e": "ISA sea level: 29.92 inHg (1013.25 hPa) and 15 °C.", "models": [1, 2, 3, 4], "n": null}, {"q": "What happens to velocity as air flows through a divergent nozzle?", "o": ["Increase.", "Remains constant.", "Decrease."], "a": 2, "t": "noz", "e": "Subsonic flow in a widening duct slows down, and its pressure rises.", "models": [1, 2, 3], "n": null}, {"q": "Severe rubbing turbine engine compressor blades will usually cause.", "o": ["Cracking.", "Burning.", "Galling and cracking."], "a": 2, "t": "comp", "e": "Hard blade-to-case rubs tear metal (galling) and start cracks.", "models": [1, 2, 3], "n": null}, {"q": "Engine oil temperature gauge indicate the temperature of the oil.", "o": ["Entering the oil cooler.", "Entering the engine.", "In the oil storage tank."], "a": 1, "t": "systems", "e": "Oil temperature is sensed at the engine oil inlet, so it shows the oil entering the engine.", "models": [1, 2, 3], "n": null}, {"q": "What is the primary purpose of changing aircraft engine lubricating oils at predetermined periods?", "o": ["Exposure to heat and oxygen causes the oil to lose its ability to maintain a film under load.", "The oil becomes contaminated with finely divided solid particles suspended in the oil.", "The oil eventually wears out."], "a": 1, "t": "systems", "e": "Oil is changed mainly because it collects fine solid particles that filters cannot remove.", "models": [1, 2, 3], "n": null}, {"q": "The air passing through the combustion chamber of a jet engine is.", "o": ["Used to support combustion and to cool the engine.", "Speeded up and heated by the action of the turbines.", "Entirely combined with the fuel and burned."], "a": 0, "t": "comb", "e": "Only about a quarter of the air burns (primary air). The rest is secondary air that cools the liner and dilutes the gas before the turbine.", "models": [1, 2, 3, 4], "n": null}, {"q": "What publication would contain time or cycle limitations for components or parts of a turbine engine Installed on a specific aircraft?", "o": ["Instructions for continued airworthiness issued by the aircraft manufacturer.", "Engine manufacturer parts catalog.", "FAA advisory circular 43.13-1A"], "a": 0, "t": "maint", "e": "Life limits for the engine as installed come from the aircraft manufacturer's Instructions for Continued Airworthiness.", "models": [1, 2, 3], "n": null}, {"q": "A continuous-loop fire detector is what type of detector?", "o": ["Spot detector.", "Over heat detector.", "Radiation sensing detector."], "a": 1, "t": "systems", "e": "A continuous loop senses heat anywhere along its length, so it is an overheat detector.", "models": [1, 2, 3], "n": null}, {"q": "What causes the fuel divider valve to open in a turbine engine duplex fuel nozzle?", "o": ["Fuel pressure.", "Bleed air after the engine reaches idle RPM.", "An electrically operated solenoid."], "a": 0, "t": "systems", "e": "In a duplex nozzle, the flow divider opens to the main (secondary) orifice when fuel pressure rises past its set value.", "models": [1, 2, 3], "n": null}, {"q": "At what point in an axial flow turbojet engine will the highest gas pressures occur?", "o": ["At the turbine entrance.", "Within the burner section.", "At the compressor outlet."], "a": 2, "t": "comp", "e": "Pressure climbs through every compressor stage and peaks at the compressor outlet (diffuser exit). It falls slightly through the burner.", "models": [1, 4], "n": null}, {"q": "When starting a turbojet engine:", "o": ["A hot start is indicated if the exhaust gas temperature exceeds specified limits.", "An excessively lean mixture is likely to cause a hot start.", "The engine should start between 60 and 80 second after the fuel shutoff lever is opened.", "Release the starter switch as soon as indication of light off occurs."], "a": 0, "t": "start", "e": "A hot start is an EGT (or TIT) above limits. A hung start is light-off without acceleration to idle.", "models": [1, 2, 3, 4], "n": null}, {"q": "Where do stress rupture cracks usually appear on turbine blades of turbojet engine?", "o": ["Across the leading or trailing edge at a right angle to the edge length.", "Along the leading edge. Parallel to the edge.", "Along the trailing edge. Parallel to the edge."], "a": 0, "t": "turb", "e": "Stress-rupture cracks run across the leading or trailing edge, at right angles to its length. They point to an over-temperature.", "models": [1, 2, 3], "n": null}, {"q": "Standard sea level temperature is:", "o": ["40 °F.", "0 °F", "0 °C", "15 °C."], "a": 3, "t": "basics", "e": "ISA sea level: 15 °C (59 °F) and 29.92 inHg.", "models": [1, 2, 3, 4], "n": null}, {"q": "A turbine engine hot section is particularly susceptible to which of the following kind of Damage?", "o": ["Scoring.", "Cracking.", "Pitting."], "a": 1, "t": "basics", "e": "Constant heating and cooling makes hot-section parts crack.", "models": [1, 2, 3, 4], "n": null}, {"q": "Why do helicopters require a minimum of two synchronous tachometer systems?", "o": ["One indicates main rotor RPM and the other tail rotor RPM.", "One indicates engine RPM and the other main rotor RPM.", "Only helicopters with turbine engines employing a dual compressor require two systems."], "a": 1, "t": "instr", "e": "A helicopter shows engine RPM and main rotor RPM, usually as needles on one dual tachometer.", "models": [1, 2, 3, 4], "n": null}, {"q": "Boost Pumps in a fuel system.", "o": ["Operate during lake-off only.", "One primary used for fuel transfer.", "Provide a positive flow of fuel to the engine pump."], "a": 2, "t": "systems", "e": "Boost pumps in the tank push fuel to the engine-driven pump, preventing vapor lock and cavitation.", "models": [1, 2, 3], "n": null}, {"q": "In a gas turbine engine, combustion occurs at a constant:", "o": ["Volume.", "Pressure.", "Density."], "a": 1, "t": "comb", "e": "The Brayton cycle: compression, combustion at constant pressure, expansion, exhaust.", "models": [1, 4], "n": null}, {"q": "What must be done after the fuel control unit has been replaced on a turbine engine?", "o": ["Recalibrate the fuel nozzle.", "Re-rig the engine.", "Recheck the flame pattern."], "a": 1, "t": "maint", "e": "A new FCU must be re-rigged so lever positions match the control settings.", "models": [1], "n": null}, {"q": "An Advantage of the axial-flow compressor is its.", "o": ["Low Weight.", "High compression ratio.", "High frontal area."], "a": 1, "t": "comp", "e": "Axial compressors stack many stages, giving high overall compression ratio and high peak efficiency.", "models": [1, 2, 3], "n": null}, {"q": "An Advantage of the centrifugal flow compressor is its high.", "o": ["Frontal area.", "Pressure rise per stage.", "Peak efficiency."], "a": 1, "t": "comp", "e": "A single centrifugal stage gives a large pressure rise, and the design is rugged and simple.", "models": [1, 2, 3, 4], "n": null}, {"q": "What should be done if a turbine engine catches a fire during starting?", "o": ["Turn off the fuel and continue cranking.", "Disengage starter immediately.", "Continue starting attempt to blow out fire.", "Place power lever in increase to exhaust fuel fumes."], "a": 0, "t": "start", "e": "Cut the fuel and keep cranking. The airflow blows fuel and flame out of the engine.", "models": [1, 2, 3, 4], "n": null}, {"q": "Turbojet engine temperature are measured by using:", "o": ["Iron / constantan thermocouples.", "Chromel / alumel thermocouples.", "Electrical resistance thermometers."], "a": 1, "t": "instr", "e": "EGT probes are chromel-alumel thermocouples, which suit the high temperature range.", "models": [1, 2, 3], "n": null}, {"q": "How are most aircraft turbine engine fire-extinguishing systems activated?", "o": ["Electrically discharged cartridge.", "Piston stem and plunger.", "Push rod assembly."], "a": 0, "t": "systems", "e": "Squib cartridges, fired electrically, rupture the bottle's seal to discharge the agent.", "models": [1, 2, 3], "n": "Model 2's answer key marks “Piston stem and plunger”. Most systems fire an electrically discharged cartridge (squib), as Models 1 and 3 say."}, {"q": "What unit in an aircraft engine lubrication system is adjusted to maintain the desired system pressure?", "o": ["Oil pressure regulator.", "Oil filter by pass valve.", "Oil pressure indicator."], "a": 0, "t": "systems", "e": "The oil pressure regulator (relief valve) is the adjustable unit that sets system pressure.", "models": [1, 2, 3], "n": null}, {"q": "Cracks may occur in hot section components of a turbine engine if they are marked during inspection with.", "o": ["A lead pencil.", "Chalk.", "Any of the above."], "a": 0, "t": "maint", "e": "Graphite from a lead pencil carburizes hot metal and starts cracks. Use approved markers.", "models": [1, 2], "n": null}, {"q": "Dirty Compressor blades in a turbine engine could result in.", "o": ["High RPM.", "High EGT.", "Both high RPM and high EGT."], "a": 2, "t": "comp", "e": "Fouled blades lose efficiency, so the engine needs more fuel and EGT rises for the same power.", "models": [1, 2, 3], "n": null}, {"q": "Why does a turbine engine require a cool-off-period before shutting it down?", "o": ["To burn off excess fuel a head of the fuel control.", "To allow the turbine wheel to cool before the case contracts around it.", "To avoid seizure of the engine bearings."], "a": 1, "t": "start", "e": "The thin case cools faster than the heavy turbine wheel. Shutting down hot can let the case shrink onto the blades.", "models": [1, 2, 3, 4], "n": null}, {"q": "Why synthetic lubricants are used in high performance turbine engines?", "o": ["Synthetic oils do not require filtering and are less expensive.", "Additives required in turbine engines can not be mixed with petroleum oils.", "They have less tendency to evaporate at high temperatures and less tendency to produce lacquer or coke."], "a": 2, "t": "systems", "e": "Synthetic oils resist evaporation at high temperature and form less lacquer and coke.", "models": [1, 2, 3], "n": null}, {"q": "Where is the engine fuel shut off valve usually located?", "o": ["All at the firewall.", "Adjacent to fuel pump.", "Downstream of the engine-driven fuel pump."], "a": 2, "t": "systems", "e": "The shutoff valve usually sits downstream of the engine-driven fuel pump.", "models": [1, 3], "n": "Model 2's answer key marks “Before the driven fuel pump”; Models 1 and 3 mark this answer."}, {"q": "How is combustion liner walls cooled in a gas-turbine engine?", "o": ["By secondary air flowing through the combustion chamber.", "By ram air from engine air intake.", "By bleed air vented from the engine air inlet."], "a": 0, "t": "comb", "e": "Secondary air flows along the liner and through its holes as a cooling film.", "models": [1, 2, 3], "n": null}, {"q": "Three parameters monitored in a jet engine by the fuel control unit are.", "o": ["Compressor outlet pressure, tail pipe temperature, and compressor RPM.", "Compressor inlet pressure, compressor RPM, and turbine inlet pressure.", "Compressor inlet pressure, burner pressure, and compressor RPM."], "a": 0, "t": "systems", "e": "The FCU schedules fuel from compressor discharge pressure, a turbine/tailpipe temperature and compressor RPM.", "models": [1, 2, 3], "n": null}, {"q": "Identify a function of the nozzle diaphragm in a turbojet engine:", "o": ["To decrease the velocity of the exhaust gases.", "To center the fuel spray in the combustion chamber.", "To direct the flow of gases to strike the turbine buckets at a desired angle.", "To direct the flow of gases into the combustion chamber."], "a": 2, "t": "turb", "e": "Nozzle guide vanes form convergent passages. They speed the gas up and aim it at the turbine blades.", "models": [1, 4], "n": null}, {"q": "When Starting a turbine engine a hung start is indicated if the engine.", "o": ["Exhaust gas temperature exceeds specified limits", "Fails to reach idle RPM.", "RPM exceeds specified operating speed."], "a": 1, "t": "start", "e": "A hung start lights off but stagnates below idle RPM. Too high an EGT is a hot start.", "models": [1, 2, 3], "n": null}, {"q": "What is the most satisfactory method of attaching turbine blades to the turbine wheels?", "o": ["The fir-tree design.", "The tongue and groove design.", "Press fit method."], "a": 0, "t": "turb", "e": "The fir-tree root spreads load over many serrations and allows thermal growth.", "models": [1, 2, 3, 4], "n": null}, {"q": "Which of the following engine variable is the most critical during turbine engine operation?", "o": ["Compressor inlet air temperature.", "Compressor RPM.", "Burner can pressure.", "Turbine inlet temperature."], "a": 3, "t": "basics", "e": "Turbine inlet temperature limits the whole engine. Blades lose strength fast above it.", "models": [1, 2, 3, 4], "n": null}, {"q": "When starting a turbojet engine. The starter should be disengaged when the.", "o": ["Engine lights one off.", "Engine reaches idle RPM.", "RPM indicator shows 100 Percent."], "a": 1, "t": "start", "e": "The starter stays on after light-off and drops out once the engine is self-sustaining, near idle.", "models": [1, 2, 3, 4], "n": "Model 4's answer key marks “Ignition and fuel system are activated”. The starter keeps assisting after light-off until the engine is self-sustaining near idle, as Models 1–3 say."}, {"q": "When must an engine AD (Airworthiness directive) be complied with after it becomes effective?", "o": ["As specified in the AD.", "During the next Scheduled inspection.", "Within 30 calendar days."], "a": 0, "t": "maint", "e": "Each Airworthiness Directive states its own compliance time.", "models": [1, 2, 3], "n": "Model 2's answer key marks “next scheduled inspection”. An AD states its own compliance time, as Models 1 and 3 say."}, {"q": "Which of the following is a primary engine instrument?", "o": ["Tachometer.", "Fuel flow meter.", "Air speed indicator."], "a": 0, "t": "instr", "e": "The tachometer is a primary engine instrument. Airspeed is a flight instrument.", "models": [1, 2, 3], "n": null}, {"q": "What turbine engine reaction provides for mixing of the fuel and air?", "o": ["Combustion section.", "Compressor section", "Turbine section."], "a": 0, "t": "comb", "e": "Fuel and air are mixed and burned in the combustion section.", "models": [1], "n": null}, {"q": "What are the two main sections of a turbine engine for inspection Purposes?", "o": ["Combustion and exhaust", "Hot and Cold", "Compressor and turbine."], "a": 1, "t": "maint", "e": "For inspection the engine splits into a cold section (inlet, compressor, diffuser) and a hot section (combustor, turbine, exhaust).", "models": [1, 2, 4], "n": null}, {"q": "What is the first engine instrument indication of a successful start of a turbine engine?", "o": ["A rise in the engine fuel flow.", "A Decrease in the engine pressure ratio.", "A rise in the exhaust gas temperature."], "a": 2, "t": "start", "e": "Light-off shows first as a rise in EGT.", "models": [1, 2, 3], "n": null}, {"q": "When the leading edge of a first-stage turbine blade is found to have stress rupture Cracks. What of the following should be expected?", "o": ["Air seal wear.", "Faulty cooling shield.", "Over temperature condition."], "a": 2, "t": "turb", "e": "Stress-rupture cracks on first-stage blades point to an over-temperature event.", "models": [1, 2, 3], "n": null}, {"q": "A purpose of the shrouds on the turbine blades of an axial-flow compressor is to.", "o": ["Reduce vibration.", "Shorten run in time.", "Reduce air entrance."], "a": 0, "t": "turb", "e": "Shrouds tie blade tips into a band that damps vibration and cuts tip leakage.", "models": [1], "n": null}, {"q": "The Stator vanes in an axial-flow compressor.", "o": ["Convert velocity energy into pressure energy and Directs flow into first stage rotor at the proper angle.", "Convert pressure energy into velocity energy.", "Direct air into the first stage rotor vanes at the proper angle."], "a": 0, "t": "comp", "e": "Stators sit between rotor stages. They slow the air, turning velocity into pressure (a diffuser action), and aim it at the next rotor at the right angle. Exit guide vanes at the discharge straighten the flow.", "models": [1, 2, 3, 4], "n": null}, {"q": "What is the primary factor, which controls the pressure ratio of an axial-flow compressor?", "o": ["Number of stages in compressor.", "Rotor diameter.", "Compressor inlet pressure."], "a": 0, "t": "comp", "e": "Each stage adds a modest pressure rise, so the number of stages sets the overall ratio.", "models": [1, 2, 3, 4], "n": null}, {"q": "Where physical separation of the fuel lines from electrical wiring or conduit is impracticable. Locate the fuel Line.", "o": ["Below the wiring and clamp the line securely to airframe structure.", "Adjacent to the wiring and clamp them together.", "Above the wiring and clamp the line securely to airframe structure."], "a": 0, "t": "systems", "e": "Mount fuel lines below wiring so a leak cannot drip onto it, and clamp them to structure.", "models": [1, 2, 3], "n": null}, {"q": "Raising or lowering the collective pitch has.", "o": ["Effect on twist grip position.", "No effects on throttle twist grip position.", "Slight effect on twist grip position."], "a": 1, "t": "heli", "e": "In a governed turboshaft, the collective is linked to the fuel control, so raising or lowering it does not move the twist grip.", "models": [2], "n": null}, {"q": "The Twin-Pac engine has", "o": ["One ignition systems.", "Two separate ignition systems.", "Two dependent ignition systems."], "a": 1, "t": "heli", "e": "The Twin-Pac's two power sections are independent, each with its own ignition system.", "models": [2, 3], "n": null}, {"q": "Where is the engine fuel shut off valve usually located?", "o": ["All at the firewall.", "Adjacent to fuel pump.", "Before the driven fuel pump."], "a": 2, "t": "systems", "e": "This version's choices differ from Models 1 and 3, which place the valve downstream of the engine-driven fuel pump.", "models": [2], "n": "Model 2 offers different choices and marks this one. Models 1 and 3 say the valve is downstream of the engine-driven fuel pump."}, {"q": "An adjustable friction control is used with the grip to maintain it.", "o": ["At idle position.", "At max. Position.", "At the selected position."], "a": 2, "t": "heli", "e": "The friction adjustment holds the throttle grip where the pilot sets it.", "models": [2, 3], "n": null}, {"q": "The Twin-Pac engine has:", "o": ["Three separate oil systems.", "One oil systems.", "Two separate oil systems."], "a": 0, "t": "heli", "e": "Each power section has its own oil system, and the combining gearbox has a third: three in all.", "models": [2, 3], "n": null}, {"q": "The Twin-Pac engine has:", "o": ["One power section.", "Two power sections with one out put shaft.", "Two power sections with two separate turbines and one C-Box."], "a": 2, "t": "heli", "e": "Two power sections, each with its own turbine, drive one combining gearbox (C-box).", "models": [2, 3], "n": null}, {"q": "An exhaust case placed aft the turbine in jet engine will cause the pressure to.", "o": ["Increase and velocity decrease.", "Increase and velocity increase.", "Decrease and velocity increase."], "a": 2, "t": "noz", "e": "The exhaust nozzle turns the remaining pressure into velocity, which produces thrust.", "models": [2, 3], "n": null}, {"q": "Raising or lowering the collective pitch has.", "o": ["Effects on throttle twist grip position.", "No effect on twist grip position.", "Slight effect on twist grip position."], "a": 1, "t": "heli", "e": "In a governed turboshaft, the collective is linked to the fuel control, so raising or lowering it does not move the twist grip.", "models": [3], "n": null}, {"q": "What is the function of the stator vane assembly at the discharge end of a typical axial flow compressor?", "o": ["To reduce drag on the first stage turbine blades.", "To straighten airflow to eliminate turbulence.", "To direct the flow of gases into the combustion chambers.", "To increase air swirling motion into the combustion chamber"], "a": 1, "t": "comp", "e": "Stators sit between rotor stages. They slow the air, turning velocity into pressure (a diffuser action), and aim it at the next rotor at the right angle. Exit guide vanes at the discharge straighten the flow.", "models": [3, 4], "n": null}, {"q": "What are the two basic elements of the turbine section in a turbine engine?", "o": ["Impeller and diffuser.", "Compressor and manifold.", "Bucket and expander.", "Stator and rotor."], "a": 3, "t": "turb", "e": "Each turbine stage is a stator (nozzle vanes) and a rotor (bladed wheel).", "models": [4], "n": null}, {"q": "How does a dual axial flow compressor improve the efficiency of a turbojet engine?", "o": ["More turbine wheel can be used.", "Combustion chamber temperatures are reduced.", "Higher compression ratios can be obtained.", "The velocity of the air entering the combustion chamber is increased."], "a": 2, "t": "comp", "e": "Two spools each run at their best speed, so a higher compression ratio is possible without stall.", "models": [4], "n": null}, {"q": "An advantage of axial flow compressor is its:", "o": ["Low starting power requirement.", "Low weight.", "High peak efficiency.", "High frontal area."], "a": 2, "t": "comp", "e": "Axial compressors stack many stages, giving high overall compression ratio and high peak efficiency.", "models": [4], "n": null}, {"q": "What is the purpose of the diffuser section in a turbine engine?", "o": ["To increase pressure and reduce velocity.", "To speed up the airflow in the turbine section.", "To convert pressure to velocity.", "To reduce pressure and increase velocity."], "a": 0, "t": "comp", "e": "The diffuser is a divergent duct that slows the air and raises its pressure before the burner.", "models": [4], "n": null}, {"q": "The diffuser section of a jet aircraft engine is located between:", "o": ["The burner section and the turbine section.", "The N1 section and the N2 section.", "Station no.7 and station no.8.", "The compressor section and the burner section."], "a": 3, "t": "comp", "e": "The diffuser sits between the compressor outlet and the combustion section.", "models": [4], "n": null}, {"q": "How the turbine shaft is usually joined to the compressor rotor of a centrifugal compressor turbine engine?", "o": ["Bolted coupling.", "Keyed coupling.", "Welded coupling.", "Splined coupling."], "a": 3, "t": "turb", "e": "A splined coupling joins the turbine shaft to the compressor rotor.", "models": [4], "n": null}, {"q": "Reduce blade vibration and improved airflow characteristics in gas turbine are brought by?", "o": ["Fir tree blade attachment.", "Impulse type blades.", "Shrouded turbine rotor blades.", "Bulb root attachment."], "a": 2, "t": "turb", "e": "Shrouds tie blade tips into a band that damps vibration and cuts tip leakage.", "models": [4], "n": null}, {"q": "Turbojet engine turbine blades removed for detailed inspection must be re-installed in:", "o": ["A slot 180° away.", "A slot 90° clockwise.", "A slot 90° counter-clockwise.", "The same slot."], "a": 3, "t": "maint", "e": "Blades are balanced as a set, so each goes back in its original slot.", "models": [4], "n": null}, {"q": "The highest heat-to-metal contact in a jet engine is the:", "o": ["Burner cans.", "Exhaust cone.", "Turbine inlet guide vanes.", "Turbine blades."], "a": 2, "t": "turb", "e": "First-stage inlet guide vanes meet the hottest gas straight from the burner.", "models": [4], "n": null}, {"q": "Between each row of rotating blades in turbine engine compressor, there is a row of stationary blades, which act to diffuse the air. These stationary blades are called:", "o": ["Buckets.", "Expanders.", "Diffuser blade.", "Stator."], "a": 3, "t": "comp", "e": "Stators sit between rotor stages. They slow the air, turning velocity into pressure (a diffuser action), and aim it at the next rotor at the right angle. Exit guide vanes at the discharge straighten the flow.", "models": [4], "n": null}, {"q": "When the A/C turbine blades are subjected to excessive temperature. What type of failure would you expect?", "o": ["Compression and torsion.", "Bending and tension.", "Torsion and tension.", "Stress rupture."], "a": 3, "t": "turb", "e": "Too much heat plus centrifugal load causes stress rupture.", "models": [4], "n": null}, {"q": "Dirty compressor blades in a turbine engine could result in:", "o": ["Low RPM.", "Low EGT.", "High RPM.", "High EGT."], "a": 3, "t": "comp", "e": "Fouled blades lose efficiency, so the engine needs more fuel and EGT rises for the same power.", "models": [4], "n": null}, {"q": "What is the proper starting sequence for a turbojet engine?", "o": ["Ignition, starter, fuel.", "Fuel, starter, ignition.", "Starter, ignition, fuel.", "Starter, fuel, ignition."], "a": 2, "t": "start", "e": "Starter first for airflow, then ignition, then fuel. Igniters must be on before fuel arrives.", "models": [4], "n": null}, {"q": "What unit in a gas turbine engine aid in stabilization of the compressor during low thrust engine operation?", "o": ["Bleed air valve.", "Stator vanes.", "Inlet guide vanes.", "Pressurization and dump valve."], "a": 0, "t": "comp", "e": "Bleed valves dump air at low RPM to prevent stall and surge.", "models": [4], "n": null}, {"q": "Hot spots on the tail cone of a turbine engine are possible indicators of a fuel nozzle or:", "o": ["A faulty combustion chamber.", "A loose inlet air guide vane.", "A faulty igniter plug.", "An improperly poisoned tail cone."], "a": 0, "t": "comb", "e": "A hot spot on the tail cone suggests a bad fuel nozzle or a faulty combustion chamber.", "models": [4], "n": null}, {"q": "What happens to pressure as airflow through a convergent nozzle?", "o": ["Increases.", "Decreases.", "Remain constant.", "Is inversely proportional to the temperature."], "a": 1, "t": "noz", "e": "Subsonic flow in a narrowing duct speeds up, and its pressure falls.", "models": [4], "n": null}, {"q": "What happens to pressure as airflow through a divergent nozzle?", "o": ["Decreases.", "Remain constant.", "Increases.", "Is inversely proportional to the temperature."], "a": 2, "t": "noz", "e": "Subsonic flow in a widening duct slows down, and its pressure rises.", "models": [4], "n": null}, {"q": "Anti-icing of turbojet engine air inlets is accomplished by:", "o": ["Electrical heating elements inside the inlet guide vane.", "Hot air ducted over the out side of the inlet guide vanes.", "Engine bleed air ducted through the critical areas.", "Electrical heating elements located within the engine air inlet cowling."], "a": 2, "t": "systems", "e": "Hot compressor bleed air is ducted through the inlet's critical areas.", "models": [4], "n": null}, {"q": "Stator blades in the compressor section of an axial-flow turbine engine:", "o": ["Increase the air velocity and prevent swirling.", "Straighten the airflow and accelerate it.", "Decrease the air velocity and prevent swirl.", "Prevent compressor surge."], "a": 2, "t": "comp", "e": "Stators sit between rotor stages. They slow the air, turning velocity into pressure (a diffuser action), and aim it at the next rotor at the right angle. Exit guide vanes at the discharge straighten the flow.", "models": [4], "n": null}, {"q": "What is the type of turbine blade is most commonly used in aircraft jet engine?", "o": ["Reaction.", "Divergent.", "Impulse.", "Reaction-impulse."], "a": 3, "t": "turb", "e": "Most turbines use reaction-impulse blades: impulse at the root, reaction at the tip.", "models": [4], "n": null}, {"q": "(1)A turbine engine axial-flow compressor is made up of a series of rotating airfoils called rotor blades and a stationary set of airfoils called stator vanes. (2)In a turbine engine, a row of rotating and stationary blades is called a stage. Regarding the above statements, which of the following is true?", "o": ["Only no.1 is true.", "Only no.2 is true.", "Both no.1 and no.2 are true.", "Neither no.1 nor no.2 is true."], "a": 2, "t": "comp", "e": "Rotor blades plus stator vanes make up an axial compressor, and one row of each is a stage. Both statements are true.", "models": [4], "n": null}, {"q": "The highest velocity of gas flowing through a gas turbine engine is found in the:", "o": ["Turbine.", "Compressor.", "Diffuser.", "Combustor."], "a": 0, "t": "noz", "e": "Gas speed peaks in the turbine section, where the nozzle guide vanes accelerate it.", "models": [4], "n": "Model 4's answer key marks “Diffuser”, but a diffuser slows the air down. Gas velocity peaks in the turbine section, where the nozzle guide vanes accelerate it."}, {"q": "The procedure for removing the accumulation of dirt deposits on compressor blades is called:", "o": ["The soak method.", "Field cleaning.", "The purging process.", "Reversed cleaning."], "a": 1, "t": "maint", "e": "Washing or abrasive cleaning of compressor blades on the wing is called field cleaning.", "models": [4], "n": null}, {"q": "What are the main sections of a turbojet engine?", "o": ["Fan, combustion and exhaust.", "Compressor, combustion and diffuser.", "Compressor, combustion and turbine.", "Inlet, combustion, and turbine."], "a": 2, "t": "basics", "e": "The three core sections are compressor, combustion and turbine.", "models": [4], "n": null}, {"q": "The Brayton cycle is known as the constant:", "o": ["Pressure cycle.", "Volume cycle.", "Temperature cycle.", "Mass cycle."], "a": 0, "t": "basics", "e": "The Brayton cycle: compression, combustion at constant pressure, expansion, exhaust.", "models": [4], "n": null}, {"q": "If the RPM of an axial-flow compressor remains constant, the angle of attack of the rotor blades can be changed by:", "o": ["Changing the velocity of the airflow.", "Changing the compressor diameter.", "Increase the pressure ratio.", "Decrease the pressure ratio."], "a": 0, "t": "comp", "e": "At constant RPM, blade angle of attack changes with the speed of the incoming air.", "models": [4], "n": null}, {"q": "The compression ratio of an axial-flow compressor is a function of the:", "o": ["Number of the compressor stages.", "Rotor diameter.", "Diffuser area.", "Air inlet velocity."], "a": 0, "t": "comp", "e": "Each stage adds a modest pressure rise, so the number of stages sets the overall ratio.", "models": [4], "n": null}, {"q": "Why do some turbine engines have more than one turbine wheel attached to a single shaft?", "o": ["To facilitate balancing of the turbine assembly.", "To straighten the airflow before it enters the exhaust area.", "To help stabilize the pressure between the compressor and the turbine.", "To extract more power from the exhaust gases than a single wheel can absorb."], "a": 3, "t": "turb", "e": "Extra wheels extract more energy than a single wheel can absorb.", "models": [4], "n": null}, {"q": "Which of the following types of combustion sections are used in aircraft turbine engines?", "o": ["Variable, can-annular, and cascade vane.", "Annular, variable, and cascade vane.", "Can, multiple-can and variable.", "Multiple-can, annular and can-annular."], "a": 3, "t": "comb", "e": "Combustor types: multiple-can, annular and can-annular.", "models": [4], "n": null}, {"q": "What is meant by a shrouded turbine?", "o": ["The turbine blades are shaped so that their ends form a band or shroud.", "Each turbine wheel is enclosed by a separate housing or shroud.", "The turbine wheel is enclosed by a protective shroud to contain the blades in case of failure.", "The turbine wheel has a shroud or duct which provides cooling air to the turbine blades."], "a": 0, "t": "turb", "e": "A shrouded turbine has blade tips shaped to form a continuous band.", "models": [4], "n": null}, {"q": "What term is used to describe a permanent and cumulative deformation of the turbine blades of a turbojet engine?", "o": ["Stretch.", "Elongation.", "Distortion.", "Creep."], "a": 3, "t": "turb", "e": "Creep is slow, permanent stretching under heat and centrifugal load.", "models": [4], "n": null}, {"q": "Hot spots in the combustion section of a turbojet engine are possible indicators of:", "o": ["Foreign object damage.", "Faulty igniter plugs.", "Dirty compressor blades.", "Malfunctioning fuel nozzles."], "a": 3, "t": "comb", "e": "Hot spots in the burner usually come from malfunctioning fuel nozzles.", "models": [4], "n": null}, {"q": "Which of the following is used to monitor the mechanical integrity of the turbines, as well as to check engine operating conditions of a turbojet engine?", "o": ["Engine oil pressure.", "Exhaust gas temperature.", "Engine oil temperature.", "Engine pressure ratio."], "a": 1, "t": "instr", "e": "EGT trends reveal turbine health and operating conditions.", "models": [4], "n": null}, {"q": "Engine pressure ratio determined by:", "o": ["Multiplying engine inlet total pressure by turbine outlet total pressure.", "Multiplying turbine outlet total pressure by engine inlet total pressure.", "Dividing turbine outlet total pressure by engine inlet total pressure.", "Dividing engine inlet total pressure by turbine outlet total pressure."], "a": 2, "t": "instr", "e": "EPR equals turbine outlet total pressure divided by engine inlet total pressure.", "models": [4], "n": null}, {"q": "What instrument on a gas turbine engine should be monitored to minimize the possibility of a hot start?", "o": ["RPM indicator.", "Turbine inlet temperature.", "Horsepower meter.", "Torque meter."], "a": 1, "t": "start", "e": "Watch TIT (or EGT) during the start to catch a hot start early.", "models": [4], "n": null}, {"q": "On a turbine engine, with a fixed power lever position, the application of engine anti-icing will result in:", "o": ["A decrease in EPR.", "A false EPR reading.", "An increase in EPR.", "A modulation of the EPR."], "a": 0, "t": "instr", "e": "Bleeding air for anti-ice takes energy from the cycle, so EPR drops at a fixed lever.", "models": [4], "n": null}, {"q": "The EGT indicator on a gas turbine engine provides a relative indication of the:", "o": ["Exhaust temperature.", "Temperature of the N1 compressor.", "Temperature of the exhaust gases as they pass the exhaust cone.", "Turbine inlet temperature."], "a": 3, "t": "instr", "e": "EGT is measured downstream, but it gives a relative indication of turbine inlet temperature.", "models": [4], "n": null}, {"q": "In what units are turbine engine tachometers calibrated?", "o": ["Percent of engine RPM.", "Actual engine RPM.", "Pounds per square inch.", "Percent of engine pressure ratio."], "a": 0, "t": "instr", "e": "Turbine tachometers read in percent RPM.", "models": [4], "n": null}];
+const TOPIC_NAMES={basics:"Basics",noz:"Ducts & nozzles",comp:"Compressors",comb:"Combustion",turb:"Turbine",start:"Starting",instr:"Instruments",systems:"Systems",heli:"Twin-Pac & controls",maint:"Maintenance & rules"};
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function h(tag,attrs={},html){const e=document.createElement(tag);for(const k in attrs){if(k==='class')e.className=attrs[k];else e.setAttribute(k,attrs[k])}if(html!=null)e.innerHTML=html;return e}
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function lerpPts(pts,x){if(x<=pts[0][0])return pts[0][1];for(let i=1;i<pts.length;i++){if(x<=pts[i][0]){const [x0,y0]=pts[i-1],[x1,y1]=pts[i];return y0+(y1-y0)*(x-x0)/(x1-x0)}}return pts[pts.length-1][1]}
+
+/* ---------- progress storage ---------- */
+const STORE='lwtr-engine-course';
+let prog={done:{},best:null};
+try{const s=localStorage.getItem(STORE);if(s)prog=Object.assign(prog,JSON.parse(s))}catch(e){}
+function save(){try{localStorage.setItem(STORE,JSON.stringify(prog))}catch(e){}}
+
+/* ---------- rail ---------- */
+const MODS=[['basics','Basics'],['airflow','Airflow'],['compressor','Compressor'],['combustion','Combustion'],['turbine','Turbine'],['starting','Starting'],['instruments','Instruments'],['systems','Systems'],['heli','Twin-Pac']];
+function drawRail(){
+  const r=document.getElementById('rail');r.innerHTML='';
+  MODS.forEach(([id,name],i)=>{const a=h('a',{href:'#'+id,class:prog.done[id]?'done':''},`<span class="n">${prog.done[id]?'✓':i+1}</span>${name}`);r.appendChild(a)});
+  r.appendChild(h('a',{href:'#exam',class:'exam'},'Practice exam'));
+}
+drawRail();
+
+/* ---------- question card ---------- */
+const LET='ABCD';
+function noShuffle(q){return q.o.some(o=>/above|no\.\s?1|both/i.test(o))}
+function qCard(q,num,onAnswer){
+  const order=noShuffle(q)?q.o.map((_,i)=>i):shuffle(q.o.map((_,i)=>i));
+  const c=h('div',{class:'qc'});
+  c.appendChild(h('div',{class:'qmeta'},`${num?`<span>Q${num}</span>`:''}<span>${TOPIC_NAMES[q.t]}</span><span>Exam ${q.models.join(', ')}</span>`));
+  c.appendChild(h('div',{class:'qtext'},esc(q.q)));
+  const box=h('div',{class:'opts'});c.appendChild(box);
+  const btns=order.map((oi,k)=>{const b=h('button',{type:'button',class:'opt'},`<span class="lt">${LET[k]}</span><span>${esc(q.o[oi])}</span>`);b.dataset.oi=oi;box.appendChild(b);return b});
+  btns.forEach(b=>b.addEventListener('click',()=>{
+    const pick=+b.dataset.oi, ok=pick===q.a;
+    btns.forEach(x=>{x.disabled=true;if(+x.dataset.oi===q.a)x.classList.add('right')});
+    if(!ok)b.classList.add('wrong');
+    const w=h('div',{class:'why'});
+    w.appendChild(h('div',{class:'verdict '+(ok?'ok':'no')},ok?'Correct':'Not quite. Correct answer: '+esc(q.o[q.a])));
+    if(q.e)w.appendChild(h('p',{},esc(q.e)));
+    if(q.n)w.appendChild(h('div',{class:'dispute'},'Answer key note: '+esc(q.n)));
+    c.appendChild(w);
+    onAnswer&&onAnswer(ok,q);
+  }));
+  return c;
+}
+
+/* ---------- check-yourself blocks ---------- */
+document.querySelectorAll('.check').forEach(box=>{
+  const topics=box.dataset.topics.split(',');
+  const pool=BANK.filter(q=>topics.includes(q.t));
+  const modId=box.closest('section').id;
+  function render(){
+    box.innerHTML='';
+    const head=h('div',{class:'checkhead'});
+    head.appendChild(h('h3',{},'Check yourself'));
+    const more=h('button',{type:'button',class:'btn ghost'},'New questions');
+    more.addEventListener('click',render);head.appendChild(more);
+    box.appendChild(head);
+    const set=[],seenA=new Set();for(const q of shuffle(pool)){const k=q.o[q.a].toLowerCase().replace(/[^a-z]/g,'').slice(0,20);if(seenA.has(k))continue;seenA.add(k);set.push(q);if(set.length===3)break}let answered=0,right=0;
+    const status=h('p',{class:'hint'},`3 of ${pool.length} questions on this lesson from the exams.`);
+    box.appendChild(status);
+    set.forEach(q=>box.appendChild(qCard(q,null,ok=>{answered++;if(ok)right++;if(answered===3){status.textContent=`You got ${right} of 3.`+(right===3?' Lesson marked as checked.':' Try a new set.');if(right===3){prog.done[modId]=true;save();drawRail()}}})));
+  }
+  render();
+});
+
+/* ---------- Lesson 1: engine ---------- */
+const CASE=[[0,112],[80,108],[330,72],[385,98],[530,100],[625,100],[780,72]];
+const HUB=[[0,0],[22,24],[80,40],[330,54],[385,40],[530,40],[625,46],[745,0],[800,0]];
+const CY=165;
+const SECS=[
+ {id:'inlet',name:'Inlet',x0:0,x1:80,cls:'cold',trend:['Pressure →','Temperature →','Velocity →'],
+  text:'Delivers smooth, even air to the compressor face. Ice forms here first.',facts:['Anti-icing ducts engine bleed air through the critical areas','Anti-ice ON at a fixed power lever lowers EPR']},
+ {id:'comp',name:'Compressor',x0:80,x1:330,cls:'cold',trend:['Pressure ↑↑','Temperature ↑','Velocity ≈'],
+  text:'Rotor rows add energy. Stator rows slow the air and turn velocity into pressure. One rotor row plus one stator row is a stage.',facts:['Number of stages sets the pressure ratio','Bleed air valve stabilizes the compressor at low RPM','Dirty blades raise EGT; remove dirt by field cleaning']},
+ {id:'diff',name:'Diffuser',x0:330,x1:385,cls:'cold',trend:['Pressure ↑ (peak)','Temperature ≈','Velocity ↓'],
+  text:'A divergent duct between the compressor and the burner. It slows the air so it can burn steadily.',facts:['Highest gas pressure: compressor outlet','Purpose: increase pressure, reduce velocity']},
+ {id:'comb',name:'Combustor',x0:385,x1:530,cls:'hot',trend:['Pressure ≈ (constant)','Temperature ↑↑ (peak)','Velocity ↑'],
+  text:'Fuel burns at constant pressure. About a quarter of the air feeds the flame; the rest cools the liner and dilutes the gas.',facts:['Brayton cycle: constant-pressure combustion','Liner cooled by secondary air','Hot spots point to fuel nozzles']},
+ {id:'turb',name:'Turbine',x0:530,x1:625,cls:'hot',trend:['Pressure ↓↓','Temperature ↓','Velocity ↑↑ (peak)'],
+  text:'Nozzle guide vanes accelerate the gas and aim it at the blades. The wheels extract energy to drive the compressor and the output shaft.',facts:['Highest gas velocity is here','Turbine inlet temperature is the most critical variable','Inlet guide vanes: highest heat-to-metal contact']},
+ {id:'exh',name:'Exhaust',x0:625,x1:780,cls:'hot',trend:['Pressure ↓','Temperature ↓','Velocity ↑'],
+  text:'Collects and straightens the gas and sends it overboard. EGT probes sit in this flow.',facts:['EGT is a relative indication of TIT','Hot spots on the tail cone: fuel nozzle or faulty combustion chamber']},
+];
+const PROF={x:[0,80,330,385,530,565,625,780],P:[.18,.18,.9,1,.94,.5,.3,.2],T:[.1,.1,.45,.47,1,.82,.62,.55],V:[.42,.42,.48,.2,.36,1,.62,.82]};
+function prof(k,x){return lerpPts(PROF.x.map((xx,i)=>[xx,PROF[k][i]]),x)}
+
+(function engine(){
+  const s=document.getElementById('engine');
+  // brackets
+  const g0=el('g',{'font-family':'Barlow Condensed, Arial Narrow, sans-serif','font-weight':'700','font-size':'24','letter-spacing':'2'},s);
+  el('line',{x1:4,y1:30,x2:381,y2:30,stroke:'var(--cold)','stroke-width':5,'stroke-linecap':'round'},g0);
+  el('line',{x1:389,y1:30,x2:780,y2:30,stroke:'var(--hot)','stroke-width':5,'stroke-linecap':'round'},g0);
+  el('text',{x:8,y:22,fill:'var(--cold)'},g0).textContent='COLD SECTION';
+  el('text',{x:776,y:22,fill:'var(--hot)','text-anchor':'end'},g0).textContent='HOT SECTION';
+  const hi=el('rect',{x:0,y:40,width:80,height:256,fill:'var(--cold-soft)',rx:6},s);
+  // annulus
+  let top='',bot='',hubT='',hubB='';
+  for(let x=0;x<=780;x+=5){const c=lerpPts(CASE,x),hb=lerpPts(HUB,x);top+=`${x},${CY-c} `;bot=`${x},${CY+c} `+bot;hubT+=`${x},${CY-hb} `;hubB=`${x},${CY+hb} `+hubB}
+  el('polygon',{points:top+bot,fill:'var(--sunk)'},s);
+  el('polyline',{points:top,fill:'none',stroke:'var(--ink)','stroke-width':4},s);
+  el('polyline',{points:bot,fill:'none',stroke:'var(--ink)','stroke-width':4},s);
+  // compressor blades
+  const bl=el('g',{},s);
+  for(let i=0;i<10;i++){const x=96+i*24;
+    [x,x+12].forEach((xx,j)=>{const c=lerpPts(CASE,xx),hb=lerpPts(HUB,xx);
+      [[CY-c+3,CY-hb],[CY+hb,CY+c-3]].forEach(([a,b])=>el('line',{x1:xx,y1:a,x2:xx,y2:b,stroke:j?'var(--metal)':'var(--cold)','stroke-width':j?3:6,'stroke-linecap':'round'},bl))})}
+  // combustor liners
+  [[-1],[1]].forEach(([sg])=>{const y=sg<0?CY-90:CY+48;el('rect',{x:398,y,width:122,height:42,rx:20,fill:'var(--hot-soft)',stroke:'var(--hot)','stroke-width':3},s);
+    el('circle',{cx:404,cy:y+21,r:6,fill:'var(--hot)'},s)});
+  // turbine
+  [[545,0],[565,1],[593,0],[612,1]].forEach(([x,rot])=>{const c=lerpPts(CASE,x),hb=lerpPts(HUB,x);
+    [[CY-c+3,CY-hb],[CY+hb,CY+c-3]].forEach(([a,b])=>el('line',{x1:x,y1:a,x2:x,y2:b,stroke:rot?'var(--hot)':'var(--metal)','stroke-width':rot?7:3,'stroke-linecap':'round'},s))});
+  // hub
+  el('polygon',{points:hubT+hubB,fill:'var(--metal)'},s);
+  el('line',{x1:30,y1:CY,x2:720,y2:CY,stroke:'var(--panel)','stroke-width':3,'stroke-dasharray':'10 6'},s);
+  // particles
+  const pg=el('g',{},s);const parts=[];
+  for(let i=0;i<54;i++){const p={x:Math.random()*780,f:.15+Math.random()*.7,sd:Math.random()<.5?-1:1,c:el('circle',{r:6},pg)};parts.push(p)}
+  function place(p){const c=lerpPts(CASE,p.x),hb=lerpPts(HUB,p.x),r=hb+p.f*(c-hb);p.c.setAttribute('cx',p.x.toFixed(1));p.c.setAttribute('cy',(CY+p.sd*r).toFixed(1));
+    const t=Math.round(prof('T',p.x)*20)*5;p.c.style.fill=`color-mix(in srgb, var(--hot) ${t}%, var(--cold))`}
+  parts.forEach(place);
+  // hit areas
+  SECS.forEach(sec=>{const r=el('rect',{x:sec.x0,y:40,width:sec.x1-sec.x0,height:256,fill:'transparent',style:'cursor:pointer'},s);r.addEventListener('click',()=>select(sec.id))});
+  // chart
+  const ch=document.getElementById('chart');
+  const chi=el('rect',{x:0,y:0,width:80,height:170,fill:'var(--cold-soft)',rx:6},ch);
+  SECS.forEach(sec=>{if(sec.x0>0)el('line',{x1:sec.x0,y1:0,x2:sec.x0,y2:170,stroke:'var(--rule)','stroke-width':2,'stroke-dasharray':'4 6'},ch)});
+  el('line',{x1:0,y1:170,x2:780,y2:170,stroke:'var(--rule)','stroke-width':2},ch);
+  [['P','var(--cold)',''],['T','var(--hot)',''],['V','var(--ink)','8 6']].forEach(([k,col,da])=>{let pts='';for(let x=0;x<=780;x+=5)pts+=`${x},${(165-prof(k,x)*140).toFixed(1)} `;el('polyline',{points:pts,fill:'none',stroke:col,'stroke-width':4,'stroke-dasharray':da,'stroke-linejoin':'round'},ch)});
+  [[385,'P','var(--cold)','max P'],[530,'T','var(--hot)','max T'],[565,'V','var(--ink)','max V']].forEach(([x,k,col,l],i)=>{const y=165-prof(k,x)*140;el('circle',{cx:x,cy:y,r:7,fill:col},ch);const t=el('text',{x:x+(i===1?-10:10),y:y-10+(i===2?32:0),'text-anchor':i===1?'end':'start',fill:col,'font-family':'IBM Plex Mono, monospace','font-size':20},ch);t.textContent=l});
+  // buttons
+  const bwrap=document.getElementById('secBtns');
+  SECS.forEach(sec=>{const b=h('button',{type:'button','aria-pressed':'false',class:sec.cls},sec.name);b.dataset.id=sec.id;b.addEventListener('click',()=>select(sec.id));bwrap.appendChild(b)});
+  function select(id){const sec=SECS.find(x=>x.id===id);
+    [hi,chi].forEach(r=>{r.setAttribute('x',sec.x0);r.setAttribute('width',sec.x1-sec.x0);r.setAttribute('fill',sec.cls==='hot'?'var(--hot-soft)':'var(--cold-soft)')});
+    bwrap.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.id===id));
+    const info=document.getElementById('secInfo');
+    info.innerHTML=`<h3 class="${sec.cls==='hot'?'k-hot':'k-cold'}">${sec.name}</h3><p>${sec.text}</p><div class="trend">${sec.trend.map(t=>`<span>${t}</span>`).join('')}</div><ul class="facts">${sec.facts.map(f=>`<li>${f}</li>`).join('')}</ul>`}
+  select('comp');
+  if(reduce)return;
+  let last=performance.now(),vis=true;
+  new IntersectionObserver(e=>{vis=e[0].isIntersecting}).observe(s);
+  function tick(t){const dt=Math.min(.05,(t-last)/1000);last=t;
+    if(vis){parts.forEach(p=>{p.x+=dt*(60+260*prof('V',p.x));if(p.x>780){p.x=0;p.f=.15+Math.random()*.7;p.sd=Math.random()<.5?-1:1}place(p)})}
+    requestAnimationFrame(tick)}
+  requestAnimationFrame(tick);
+})();
+
+/* ---------- Lesson 2: nozzle ---------- */
+(function nozzle(){
+  const s=document.getElementById('nozzle');let mode='con';
+  const wallT=el('path',{fill:'var(--sunk)',stroke:'var(--ink)','stroke-width':4},s);
+  const wallB=el('path',{fill:'var(--sunk)',stroke:'var(--ink)','stroke-width':4},s);
+  const lab=el('g',{'font-family':'IBM Plex Mono, monospace','font-size':18,fill:'var(--muted)'},s);
+  const tIn=el('text',{x:20,y:196},lab),tOut=el('text',{x:580,y:196,'text-anchor':'end'},lab);
+  const pg=el('g',{},s);const parts=[];
+  for(let i=0;i<40;i++)parts.push({x:Math.random()*600,f:Math.random()*2-1,c:el('circle',{r:5},pg)});
+  function half(x){const a=mode==='con'?80:36,b=mode==='con'?36:80;const t=Math.min(1,Math.max(0,(x-120)/360));const e=t*t*(3-2*t);return a+(b-a)*e}
+  function draw(){let t='M0,0 ',b='M0,200 ';for(let x=0;x<=600;x+=10){t+=`L${x},${100-half(x)} `;b+=`L${x},${100+half(x)} `}t+='L600,0 Z';b+='L600,200 Z';wallT.setAttribute('d',t);wallB.setAttribute('d',b);
+    tIn.textContent=mode==='con'?'wide, slow':'narrow, fast';tOut.textContent=mode==='con'?'narrow, fast':'wide, slow';
+    const r=mode==='con'?80/36:36/80;
+    document.getElementById('nozV').textContent='×'+r.toFixed(1);
+    document.getElementById('nozP').textContent=mode==='con'?'Falls':'Rises';
+    document.getElementById('nozP').style.color=mode==='con'?'var(--hot)':'var(--cold)';
+    document.getElementById('nozW').textContent=mode==='con'?'Nozzle guide vanes, exhaust nozzle':'Diffuser, stator vane passages';
+    parts.forEach(place)}
+  function place(p){const hh=half(p.x)-8;p.c.setAttribute('cx',p.x.toFixed(1));p.c.setAttribute('cy',(100+p.f*hh).toFixed(1));
+    const sp=80/half(p.x);p.c.style.fill=`color-mix(in srgb, var(--hot) ${Math.round((sp-0.45)/1.8*100)}%, var(--cold))`}
+  document.querySelectorAll('#nozBtns button').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.n;document.querySelectorAll('#nozBtns button').forEach(x=>x.setAttribute('aria-pressed',x===b));draw()}));
+  draw();
+  if(reduce)return;
+  let last=performance.now(),vis=true;new IntersectionObserver(e=>{vis=e[0].isIntersecting}).observe(s);
+  (function tick(t){const dt=Math.min(.05,((t||last)-last)/1000);last=t||last;if(vis)parts.forEach(p=>{p.x+=dt*70*(80/half(p.x));if(p.x>600){p.x=0;p.f=Math.random()*2-1}place(p)});requestAnimationFrame(tick)})();
+})();
+
+/* ---------- Lesson 3: stages ---------- */
+(function stages(){
+  const s=document.getElementById('stages'),inp=document.getElementById('stageN');
+  function draw(){const n=+inp.value;s.innerHTML='';document.getElementById('stageNv').textContent=n;
+    const pr=Math.pow(1.22,n);document.getElementById('prv').textContent=pr.toFixed(1)+' : 1';
+    const x0=40,x1=560,w=(x1-x0)/n;
+    // case narrowing
+    const r0=80,r1=80-Math.min(40,n*3);
+    el('path',{d:`M${x0-30},${115-r0} L${x0},${115-r0} L${x1},${115-r1} L${x1+30},${115-r1} L${x1+30},${115+r1} L${x1},${115+r1} L${x0},${115+r0} L${x0-30},${115+r0} Z`,fill:'var(--sunk)',stroke:'var(--ink)','stroke-width':3},s);
+    el('rect',{x:x0-30,y:107,width:x1-x0+60,height:16,fill:'var(--metal)'},s);
+    for(let i=0;i<n;i++){const xr=x0+w*i+w*.3,xs=x0+w*i+w*.72;const rr=r0+(r1-r0)*((xr-x0)/(x1-x0)),rs=r0+(r1-r0)*((xs-x0)/(x1-x0));
+      [[115-rr+3,107],[123,115+rr-3]].forEach(([a,b])=>el('line',{x1:xr,y1:a,x2:xr,y2:b,stroke:'var(--cold)','stroke-width':Math.max(4,Math.min(10,w*.25)),'stroke-dasharray':'10 8',class:'rotor-anim'},s));
+      [[115-rs+3,107],[123,115+rs-3]].forEach(([a,b])=>el('line',{x1:xs,y1:a,x2:xs,y2:b,stroke:'var(--metal)','stroke-width':Math.max(3,Math.min(6,w*.15)),'stroke-dasharray':'10 8'},s));
+    }
+    // pressure bars along the bottom
+    const base=228,maxH=26;
+    for(let i=0;i<n;i++){const v=Math.pow(1.22,i+1),hgt=Math.max(2,(v-1)/(Math.pow(1.22,14)-1)*maxH);el('rect',{x:x0+w*i+w*.2,y:base-hgt,width:w*.6,height:hgt,fill:'var(--cold)',opacity:.75,rx:2},s)}
+    const lab=el('text',{x:x0-30,y:20,'font-family':'IBM Plex Mono, monospace','font-size':17,fill:'var(--muted)'},s);lab.textContent='Air in →';
+    const lab2=el('text',{x:x1+30,y:20,'text-anchor':'end','font-family':'IBM Plex Mono, monospace','font-size':17,fill:'var(--cold)'},s);lab2.textContent=`P × ${pr.toFixed(1)}`;
+  }
+  inp.addEventListener('input',draw);draw();
+})();
+
+/* ---------- Lesson 4: duplex nozzle ---------- */
+(function duplex(){
+  const s=document.getElementById('duplex'),inp=document.getElementById('fuelP');
+  el('rect',{x:20,y:90,width:90,height:40,rx:6,fill:'var(--metal)'},s);
+  el('rect',{x:100,y:80,width:30,height:60,rx:6,fill:'var(--ink)'},s);
+  const prim=el('path',{fill:'var(--hot-soft)',stroke:'var(--hot)','stroke-width':2,opacity:.9},s);
+  const sec=el('path',{fill:'var(--hot)',opacity:.35},s);
+  const lt=el('g',{'font-family':'IBM Plex Mono, monospace','font-size':17,fill:'var(--muted)'},s);
+  el('text',{x:20,y:165},lt).textContent='nozzle';
+  const t1=el('text',{x:180,y:28},lt),t2=el('text',{x:180,y:205},lt);
+  function draw(){const p=+inp.value;document.getElementById('fuelPv').textContent=p+'%';
+    const open=p>=45;const pl=60+p*1.6;
+    prim.setAttribute('d',`M130,110 L${130+pl},${110-pl*.55} Q${130+pl+18},110 ${130+pl},${110+pl*.55} Z`);
+    prim.style.opacity=p>2?.9:0;
+    if(open){const L=120+(p-45)*5.5;sec.setAttribute('d',`M130,110 L${130+L},${110-L*.22} Q${130+L+20},110 ${130+L},${110+L*.22} Z`);sec.style.opacity=.45}else sec.style.opacity=0;
+    t1.textContent=p>2?'primary: fine, wide spray':'';t2.textContent=open?'main (secondary) orifice open':'';
+    const st=document.getElementById('divState');st.textContent=open?'Open':'Closed';st.style.color=open?'var(--hot)':'var(--ink)';
+    document.getElementById('divSpray').textContent=p<=2?'Nothing':open?'Primary + main':'Primary only'}
+  inp.addEventListener('input',draw);draw();
+})();
+
+/* ---------- Lesson 5: blade ---------- */
+(function blade(){
+  const s=document.getElementById('blade');
+  // root fir-tree
+const steps=[[240,300],[226,312],[250,320],[232,332],[256,340],[256,352],[344,352],[344,340],[368,332],[350,320],[374,312],[360,300]];
+  el('path',{d:'M'+steps.map(p=>p.join(',')).join(' L')+' Z',fill:'var(--metal)',stroke:'var(--ink)','stroke-width':3},s);
+  el('rect',{x:220,y:282,width:160,height:20,rx:4,fill:'var(--metal)',stroke:'var(--ink)','stroke-width':3},s);
+  // creep ghost
+  const ghost=el('path',{d:'M262,282 C250,200 252,110 270,30 L336,30 C348,110 350,200 338,282 Z',fill:'none',stroke:'var(--hot)','stroke-width':2,'stroke-dasharray':'6 6',opacity:0},s);
+  // airfoil
+  el('path',{d:'M262,282 C250,200 252,120 270,50 L336,50 C348,120 350,200 338,282 Z',fill:'var(--hot-soft)',stroke:'var(--ink)','stroke-width':3},s);
+  // shroud
+  el('rect',{x:240,y:36,width:120,height:16,rx:3,fill:'var(--metal)',stroke:'var(--ink)','stroke-width':3},s);
+  // cracks on leading edge
+  const cracks=el('g',{stroke:'var(--bad)','stroke-width':3,opacity:0},s);
+  [[150],[175],[200]].forEach(([y])=>el('line',{x1:252,y1:y,x2:272,y2:y+1},cracks));
+  const lab=el('g',{'font-family':'IBM Plex Mono, monospace','font-size':16,fill:'var(--muted)'},s);
+  el('text',{x:150,y:120,'text-anchor':'end'},lab).textContent='leading edge';
+  el('text',{x:450,y:120},lab).textContent='trailing edge';
+  const SPOTS=[
+   {n:1,x:400,y:44,t:'Tip shroud',d:'Blade tips shaped to form a band or shroud. Shrouds reduce vibration and improve airflow by cutting tip leakage.',show:null},
+   {n:2,x:200,y:175,t:'Stress-rupture cracks',d:'They run across the leading or trailing edge, at right angles to the edge. On first-stage blades they point to an over-temperature condition.',show:'cracks'},
+   {n:3,x:410,y:200,t:'Creep',d:'A permanent, cumulative stretching of the blade under heat and centrifugal load. The dashed outline shows a stretched blade.',show:'ghost'},
+   {n:4,x:410,y:330,t:'Fir-tree root',d:'The most satisfactory way to attach blades to the wheel. Serrations spread the load and allow for thermal growth. Reinstall each blade in the same slot.',show:null},
+  ];
+  const info=document.getElementById('bladeInfo');const dots=[];
+  SPOTS.forEach(sp=>{const g=el('g',{style:'cursor:pointer',tabindex:0,role:'button','aria-label':sp.t},s);
+    el('circle',{cx:sp.x,cy:sp.y,r:20,fill:'var(--cold)'},g);
+    const t=el('text',{x:sp.x,y:sp.y+7,'text-anchor':'middle','font-family':'Barlow Condensed, sans-serif','font-weight':700,'font-size':22,fill:'#fff'},g);t.textContent=sp.n;
+    const go=()=>pick(sp);g.addEventListener('click',go);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}});dots.push([g,sp])});
+  function pick(sp){dots.forEach(([g,x])=>g.querySelector('circle').setAttribute('fill',x===sp?'var(--hot)':'var(--cold)'));
+    cracks.setAttribute('opacity',sp.show==='cracks'?1:0);ghost.setAttribute('opacity',sp.show==='ghost'?1:0);
+    info.innerHTML=`<h3>${sp.n} · ${sp.t}</h3><p>${sp.d}</p>`}
+  pick(SPOTS[1]);
+})();
+
+/* ---------- Lesson 6: start simulator ---------- */
+(function sim(){
+  function gauge(id,max,red,ticks){const s=document.getElementById(id);
+    const arc=(a0,a1,r)=>{const p=a=>[100+r*Math.cos(a),105+r*Math.sin(a)];const [x0,y0]=p(a0),[x1,y1]=p(a1);return `M${x0},${y0} A${r},${r} 0 ${a1-a0>Math.PI?1:0} 1 ${x1},${y1}`};
+    const A=v=>Math.PI+Math.PI*(v/max);
+    el('path',{d:arc(Math.PI,2*Math.PI,82),fill:'none',stroke:'var(--sunk)','stroke-width':14},s);
+    if(red!=null)el('path',{d:arc(A(red),2*Math.PI,82),fill:'none',stroke:'var(--bad)','stroke-width':14},s);
+    ticks.forEach(v=>{const a=A(v);el('line',{x1:100+66*Math.cos(a),y1:105+66*Math.sin(a),x2:100+74*Math.cos(a),y2:105+74*Math.sin(a),stroke:'var(--muted)','stroke-width':2},s);const t=el('text',{x:100+52*Math.cos(a),y:110+52*Math.sin(a),'text-anchor':'middle','font-family':'IBM Plex Mono, monospace','font-size':12,fill:'var(--muted)'},s);t.textContent=v});
+    const nd=el('line',{x1:100,y1:105,x2:22,y2:105,stroke:'var(--ink)','stroke-width':4,'stroke-linecap':'round'},s);el('circle',{cx:100,cy:105,r:7,fill:'var(--ink)'},s);
+    return v=>{nd.setAttribute('transform',`rotate(${180*Math.min(1.02,v/max)} 100 105)`)}}
+  const setN1=gauge('gN1',110,null,[0,20,40,60,80,100]),setE=gauge('gEGT',1000,760,[0,200,400,600,800,1000]);
+  const vN1=document.getElementById('vN1'),vE=document.getElementById('vEGT'),log=document.getElementById('simLog'),badge=document.getElementById('fireBadge');
+  const sw={starter:document.getElementById('swStarter'),ign:document.getElementById('swIgn'),fuel:document.getElementById('swFuel')};
+  const stepEls=[...document.querySelectorAll('#steps li')];
+  let S,scen='normal';
+  function reset(){S={n1:0,egt:25,starter:false,ign:false,fuel:false,lit:false,pool:0,fire:false,crankOut:0,hungT:0,flags:{},steps:[0,0,0,0,0],done:false};log.innerHTML='';badge.hidden=true;Object.values(sw).forEach(b=>{b.setAttribute('aria-pressed','false');b.querySelector('.sws').textContent='OFF'});say('Pick a scenario, then work the switches in order.','');ui()}
+  function say(t,k){const m=h('div',{class:'msg '+(k||'')},t);log.prepend(m);while(log.children.length>4)log.lastChild.remove()}
+  function once(k,t,c){if(!S.flags[k]){S.flags[k]=1;say(t,c)}}
+  function toggle(k){S[k]=!S[k];sw[k].setAttribute('aria-pressed',S[k]);sw[k].querySelector('.sws').textContent=S[k]?'ON':'OFF';
+    if(k==='starter'&&S.starter){S.steps[0]=1}
+    if(k==='ign'&&S.ign){S.steps[1]=1;if(S.fuel&&!S.lit)once('order','Fuel was on before ignition. Raw fuel has been pooling in the burner.','warn')}
+    if(k==='fuel'&&S.fuel){if(!S.ign)once('fuelfirst','Fuel ON before ignition: fuel collects with nothing to light it.','warn');if(S.n1<12)once('noair','Fuel ON with too little airflow. Build N1 with the starter first.','warn');if(S.ign&&S.n1>=12)S.steps[2]=1}
+    if(k==='fuel'&&!S.fuel&&S.lit){S.lit=false;say(S.starter?'Fuel OFF, starter still cranking: airflow purges and cools the engine.':'Fuel OFF.','')}
+    if(k==='starter'&&!S.starter&&S.lit&&S.n1<55&&!S.done)once('early','Starter released before idle: the engine can\'t accelerate on its own yet.','bad');
+    if(k==='starter'&&!S.starter&&S.fire)once('fireStop','Keep cranking during a fire. Airflow is what blows it out.','bad');
+    ui()}
+  Object.keys(sw).forEach(k=>sw[k].addEventListener('click',()=>toggle(k)));
+  document.querySelectorAll('#scen button').forEach(b=>b.addEventListener('click',()=>{scen=b.dataset.s;document.querySelectorAll('#scen button').forEach(x=>x.setAttribute('aria-pressed',x===b));reset();
+    const tips={normal:'Normal start. Follow the sequence.',hot:'This engine is getting too much fuel. Watch the EGT.',hung:'This starter is weak. Watch N1 after light-off.',fire:'A tailpipe fire will break out at light-off. Know your action.'};say(tips[scen],'')}));
+  document.getElementById('simReset').addEventListener('click',reset);
+  function step(dt){
+    const motorCap=scen==='hung'?20:24;
+    if(S.fuel&&!S.lit)S.pool+=dt;
+    if(S.fuel&&S.ign&&S.n1>=12&&!S.lit){S.lit=true;S.steps[2]=1;
+      if(scen==='fire'){S.fire=true;say('FIRE warning at light-off. Fuel OFF and keep cranking!','bad')}}
+    // N1
+    if(S.lit&&S.fuel){
+      const cap=scen==='hung'?38:60;
+      let acc=S.starter?(scen==='hung'?2.2:4.5):(S.n1>=55?1.5:-2.5);
+      if(S.n1<cap||acc<0)S.n1+=acc*dt; if(S.n1>cap&&acc>0)S.n1=cap+(S.n1-cap)*.9;
+      if(!S.starter&&S.n1>=58&&S.n1<60)S.n1+=1.5*dt;
+    } else {
+      if(S.starter){if(S.n1<motorCap)S.n1+=7*dt;else S.n1-=(S.n1-motorCap)*dt*.8}
+      else S.n1-=Math.max(1.5,S.n1*.12)*dt;
+    }
+    S.n1=Math.max(0,Math.min(104,S.n1));
+    // EGT
+    let tgt=25;
+    if(S.lit&&S.fuel){
+      tgt=S.n1<58?560+ (58-S.n1)*3:470;
+      if(scen==='hot'||S.pool>2.5)tgt=Math.max(tgt,920);
+      if(scen==='hung'){S.hungT+=dt;tgt=560+S.hungT*18}
+      if(!S.starter&&S.n1<55)tgt+=120;
+    }
+    const rate=S.lit?1.2:(S.starter?.9:.25);
+    S.egt+=(tgt-S.egt)*Math.min(1,rate*dt);
+    if(S.lit&&S.egt>120)S.steps[3]=1;
+    if(S.lit&&S.egt>120)once('lightoff','Light-off: EGT is rising. That is the first sign of a good start.','ok');
+    if(S.egt>760)once('hot','HOT START: EGT is over its limit. Fuel OFF, keep cranking to cool the engine.','bad');
+    if(scen==='hung'&&S.lit&&S.hungT>6)once('hung','HUNG START: N1 is stuck below idle and EGT keeps creeping up. Abort: fuel OFF, keep cranking.','bad');
+    // fire
+    if(S.fire){if(!S.fuel&&S.starter){S.crankOut+=dt;if(S.crankOut>3){S.fire=false;say('Fire out. Fuel OFF plus cranking blew it out of the tailpipe.','ok')}}else S.crankOut=0}
+    badge.hidden=!S.fire;
+    if(S.lit&&S.n1>=59.5&&S.starter)once('idle','Idle reached (about 60%). Release the starter now.','ok');
+    if(S.lit&&S.n1>=59&&!S.starter&&S.egt<760&&!S.done){S.done=true;S.steps[4]=1;say('Start complete: self-sustaining at idle with EGT in limits.','ok')}
+  }
+  function ui(){setN1(S.n1);setE(S.egt);vN1.textContent=Math.round(S.n1)+'%';vE.textContent=Math.round(S.egt)+'°';vE.style.color=S.egt>760?'var(--bad)':'';stepEls.forEach((li,i)=>li.classList.toggle('done',!!S.steps[i]))}
+  reset();
+  let last=performance.now();
+  (function loop(t){const dt=Math.min(.1,((t||last)-last)/1000);last=t||last;step(dt);ui();requestAnimationFrame(loop)})();
+})();
+
+/* ---------- Lesson 7: EPR + tach ---------- */
+(function instr(){
+  const pl=document.getElementById('pl'),ai=document.getElementById('aiBtn');let on=false;
+  function upd(){const p=+pl.value;let pt7=14.7*(1+0.012*p);if(on)pt7*=0.95;document.getElementById('plv').textContent=p+'%';document.getElementById('pt7').textContent=pt7.toFixed(1);const e=document.getElementById('epr');e.textContent=(pt7/14.7).toFixed(2);e.style.color=on?'var(--cold)':''}
+  pl.addEventListener('input',upd);ai.addEventListener('click',()=>{on=!on;ai.setAttribute('aria-pressed',on);ai.textContent=on?'Anti-ice ON':'Anti-ice OFF';upd()});upd();
+  const s=document.getElementById('tach');
+  el('circle',{cx:110,cy:105,r:90,fill:'var(--paper)',stroke:'var(--ink)','stroke-width':4},s);
+  const A=v=>(-225+270*v/110)*Math.PI/180;
+  for(let v=0;v<=110;v+=10){const a=A(v);el('line',{x1:110+78*Math.cos(a),y1:105+78*Math.sin(a),x2:110+86*Math.cos(a),y2:105+86*Math.sin(a),stroke:'var(--muted)','stroke-width':2},s);if(v%20===0){const t=el('text',{x:110+64*Math.cos(a),y:110+64*Math.sin(a),'text-anchor':'middle','font-family':'IBM Plex Mono, monospace','font-size':13,fill:'var(--muted)'},s);t.textContent=v}}
+  {const a0=A(97),a1=A(104);el('path',{d:`M${110+82*Math.cos(a0)},${105+82*Math.sin(a0)} A82,82 0 0 1 ${110+82*Math.cos(a1)},${105+82*Math.sin(a1)}`,stroke:'var(--ok)','stroke-width':8,fill:'none'},s)}
+  const nR=el('line',{x1:110,y1:105,x2:110,y2:35,stroke:'var(--cold)','stroke-width':5,'stroke-linecap':'round'},s);
+  const nE=el('line',{x1:110,y1:105,x2:110,y2:45,stroke:'var(--hot)','stroke-width':5,'stroke-linecap':'round'},s);
+  el('circle',{cx:110,cy:105,r:7,fill:'var(--ink)'},s);
+  const lg=el('g',{'font-family':'Barlow Condensed, sans-serif','font-weight':700,'font-size':18},s);
+  el('text',{x:88,y:160,fill:'var(--hot)','text-anchor':'middle'},lg).textContent='E';el('text',{x:132,y:160,fill:'var(--cold)','text-anchor':'middle'},lg).textContent='R';
+  el('text',{x:110,y:180,'text-anchor':'middle','font-family':'IBM Plex Mono, monospace','font-size':12,fill:'var(--muted)'},s).textContent='% RPM';
+  let auto=false,cur={e:100,r:100};
+  const set=(n,v)=>n.setAttribute('transform',`rotate(${(-225+270*v/110)+90} 110 105)`);
+  function anim(){const tgt={e:auto?68:100,r:100};cur.e+=(tgt.e-cur.e)*.08;set(nE,cur.e);set(nR,cur.r);if(Math.abs(tgt.e-cur.e)>.2&&!reduce)requestAnimationFrame(anim);else{cur.e=tgt.e;set(nE,cur.e)}}
+  set(nE,100);set(nR,100);
+  const b=document.getElementById('autoBtn');b.addEventListener('click',()=>{auto=!auto;b.setAttribute('aria-pressed',auto);b.textContent=auto?'Back to powered flight':'Simulate autorotation';
+    document.getElementById('tachTxt').textContent=auto?'Autorotation: the freewheel unit lets the rotor keep turning while the engine slows. The needles split, which is why both readings are needed.':'Powered flight: the needles are joined. The engine drives the rotor at the same percent RPM.';anim()});
+})();
+
+/* ---------- Lesson 9: Twin-Pac ---------- */
+(function twin(){
+  const s=document.getElementById('twin');
+  const t=(x,y,str,o={})=>{const e=el('text',Object.assign({x,y,'font-family':'IBM Plex Sans, sans-serif','font-size':16,fill:'var(--ink)'},o),s);e.textContent=str;return e};
+  [[20,'Power section 1'],[140,'Power section 2']].forEach(([y,name])=>{
+    el('rect',{x:10,y,width:250,height:90,rx:10,fill:'var(--hot-soft)',stroke:'var(--hot)','stroke-width':3},s);
+    t(26,y+30,name,{'font-family':'Barlow Condensed, sans-serif','font-weight':700,'font-size':22});
+    t(26,y+56,'own turbine · own ignition',{fill:'var(--muted)','font-size':15});t(26,y+77,'own oil system',{fill:'var(--muted)','font-size':15});
+    el('path',{d:`M260,${y+45} L360,${y+45} L360,125 L380,125`,fill:'none',stroke:'var(--ink)','stroke-width':4,'stroke-dasharray':'12 8',class:'dash-anim'},s)});
+  el('rect',{x:380,y:70,width:120,height:110,rx:10,fill:'var(--cold-soft)',stroke:'var(--cold)','stroke-width':3},s);
+  t(440,110,'C-box',{'text-anchor':'middle','font-family':'Barlow Condensed, sans-serif','font-weight':700,'font-size':24});
+  t(440,134,'combining',{'text-anchor':'middle',fill:'var(--muted)','font-size':14});t(440,152,'gearbox · oil 3',{'text-anchor':'middle',fill:'var(--muted)','font-size':14});
+  el('path',{d:'M500,125 L585,125',stroke:'var(--ink)','stroke-width':6,fill:'none'},s);el('path',{d:'M575,113 L592,125 L575,137 Z',fill:'var(--ink)'},s);
+  t(545,108,'rotor',{'text-anchor':'middle',fill:'var(--muted)','font-size':14});
+})();
+
+/* ---------- Practice exam ---------- */
+(function exam(){
+  document.getElementById('bankCount').textContent=BANK.length;
+  const box=document.getElementById('examBox');
+  let cfg={len:25,model:'all'},run=null;
+  function setup(){
+    box.innerHTML='';
+    const w=h('div',{class:'examsetup'});
+    const pool=()=>BANK.filter(q=>cfg.model==='all'||q.models.includes(+cfg.model));
+    w.appendChild(h('p',{},'Questions come up in random order with instant feedback and an explanation. Your best score is saved in this browser.'));
+    const r1=h('div',{class:'row'},'<span>Questions from</span>');const s1=h('div',{class:'seg'});
+    [['all','All exams'],['1','Exam 1'],['2','Exam 2'],['3','Exam 3'],['4','Exam 4']].forEach(([v,l])=>{const b=h('button',{type:'button','aria-pressed':cfg.model===v},l);b.addEventListener('click',()=>{cfg.model=v;setup()});s1.appendChild(b)});r1.appendChild(s1);w.appendChild(r1);
+    const n=pool().length;
+    const r2=h('div',{class:'row'},'<span>Length</span>');const s2=h('div',{class:'seg'});
+    [10,25,50,'all'].forEach(v=>{const lab=v==='all'?`All ${n}`:v;if(v!=='all'&&v>=n)return;const b=h('button',{type:'button','aria-pressed':cfg.len===v},lab);b.addEventListener('click',()=>{cfg.len=v;setup()});s2.appendChild(b)});r2.appendChild(s2);w.appendChild(r2);
+    if(cfg.len!=='all'&&cfg.len>=n)cfg.len='all';
+    if(prog.best)w.appendChild(h('p',{class:'hint'},`Best so far: ${prog.best.pct}% on ${prog.best.n} questions.`));
+    const go=h('button',{type:'button',class:'btn'},'Start exam');go.addEventListener('click',()=>{const p=shuffle(pool());start(cfg.len==='all'?p:p.slice(0,cfg.len))});
+    w.appendChild(h('div',{},''));w.lastChild.appendChild(go);
+    box.appendChild(w);
+  }
+  function start(list){run={list,i:0,right:0,missed:[],byT:{}};next()}
+  function next(){
+    box.innerHTML='';
+    const {list,i}=run;
+    if(i>=list.length)return finish();
+    const top=h('div',{class:'cap'},`<span class="eyebrow">Question ${i+1} of ${list.length}</span><span class="mono hint">${run.right} correct</span>`);box.appendChild(top);
+    const pb=h('div',{class:'progressbar'},'<i></i>');pb.firstChild.style.width=(i/list.length*100)+'%';box.appendChild(pb);
+    const q=list[i];
+    const nb=h('button',{type:'button',class:'btn',disabled:''},i===list.length-1?'See results':'Next question');
+    box.appendChild(qCard(q,i+1,ok=>{const t=run.byT[q.t]||(run.byT[q.t]={r:0,n:0});t.n++;if(ok){run.right++;t.r++}else run.missed.push(q);nb.disabled=false;nb.focus({preventScroll:true})}));
+    const row=h('div',{style:'display:flex;gap:10px;flex-wrap:wrap'});row.appendChild(nb);
+    const quit=h('button',{type:'button',class:'btn ghost'},'End exam');quit.addEventListener('click',()=>{run.list=run.list.slice(0,run.i+(nb.disabled?0:1));finish()});row.appendChild(quit);
+    box.appendChild(row);
+    nb.addEventListener('click',()=>{run.i++;next();box.scrollIntoView({block:'start',behavior:reduce?'auto':'smooth'})});
+  }
+  function finish(){
+    box.innerHTML='';const n=run.list.length;if(!n){setup();return}
+    const answered=Object.values(run.byT).reduce((a,t)=>a+t.n,0)||1;
+    const pct=Math.round(run.right/answered*100);
+    if(answered>=10&&(!prog.best||pct>prog.best.pct||(pct===prog.best.pct&&answered>prog.best.n))){prog.best={pct,n:answered};save()}
+    box.appendChild(h('div',{class:'scoreline'},`<span class="bigscore" style="color:${pct>=75?'var(--ok)':pct>=50?'var(--hot)':'var(--bad)'}">${pct}%</span><span>${run.right} of ${answered} correct</span>`));
+    const tb=h('div',{class:'tbars'});
+    Object.entries(run.byT).sort((a,b)=>a[1].r/a[1].n-b[1].r/b[1].n).forEach(([t,v])=>{const p=Math.round(v.r/v.n*100);tb.appendChild(h('div',{class:'tbar'},`<span>${TOPIC_NAMES[t]}</span><span class="tr"><i style="width:${p}%;background:${p>=75?'var(--ok)':p>=50?'var(--hot)':'var(--bad)'}"></i></span><span class="mono">${v.r}/${v.n}</span>`))});
+    box.appendChild(h('h3',{},'By topic'));box.appendChild(tb);
+    const row=h('div',{style:'display:flex;gap:10px;flex-wrap:wrap'});
+    if(run.missed.length){const rm=h('button',{type:'button',class:'btn'},`Retry ${run.missed.length} missed`);const m=run.missed.slice();rm.addEventListener('click',()=>start(shuffle(m)));row.appendChild(rm)}
+    const again=h('button',{type:'button',class:'btn ghost'},'New exam');again.addEventListener('click',setup);row.appendChild(again);
+    box.appendChild(row);
+    if(run.missed.length){box.appendChild(h('h3',{},'Review what you missed'));const ml=h('div',{class:'missed'});run.missed.forEach(q=>ml.appendChild(h('div',{},`<p>${esc(q.q)}</p><p>${esc(q.o[q.a])}</p>`)));box.appendChild(ml)}
+  }
+  setup();
+})();
+</script>
+
+</body></html>
